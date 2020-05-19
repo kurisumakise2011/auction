@@ -16,4 +16,9 @@ public class HtmlPageController {
         return "index";
     }
 
+    @GetMapping(path = "/login", headers = {"Application-Content: text/html"})
+    public String getLoginPage() {
+        return "login";
+    }
+
 }
