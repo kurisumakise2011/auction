@@ -15,13 +15,16 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 
 @Slf4j
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
+    public static final String TOKEN = "token";
     @Qualifier("userServiceImpl")
     @Autowired
     private UserDetailsService userDetailsService;
@@ -32,12 +35,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-        final String requestTokenHeader = request.getHeader("Authorization");
+        final Cookie[] cookies = request.getCookies();
+        String jwtToken = lookupToken(cookies);
         String username = null;
-        String jwtToken = null;
 
-        if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
-            jwtToken = requestTokenHeader.substring(7);
+        if (jwtToken != null) {
             try {
                 username = jwtTokenService.getUsernameFromToken(jwtToken);
             } catch (IllegalArgumentException e) {
@@ -45,8 +47,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             } catch (ExpiredJwtException e) {
                 log.error("JWT Token has expired", e);
             }
-        } else {
-            log.warn("JWT Token does not begin with Bearer String");
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -60,5 +60,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         }
         chain.doFilter(request, response);
+    }
+
+    private String lookupToken(Cookie[] cookies) {
+        return Arrays.stream(cookies)
+                .filter(cookie -> TOKEN.equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findAny()
+                .orElse(null);
     }
 }

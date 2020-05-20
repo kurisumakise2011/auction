@@ -30,12 +30,12 @@ public class UserDetailsAdapter implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return !userProfile.getSettings().isBanned();
+        return !userProfile.getSettings().getBanned();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return !userProfile.getSettings().isBanned();
+        return !userProfile.getSettings().getBanned();
     }
 
     @Override
@@ -45,7 +45,7 @@ public class UserDetailsAdapter implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return !userProfile.getSettings().isBanned();
+        return !userProfile.getSettings().getBanned();
     }
 
     public String id() {

@@ -4,15 +4,15 @@ import com.auction.game.converter.ItemMediaConverter;
 import com.auction.game.model.ItemMedia;
 import com.auction.game.repository.ItemMediaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RequestMapping(name = "/resources")
-@Controller
+@RequestMapping("/resources")
+@RestController
 public class StaticResourceController {
 
     @Autowired
@@ -21,7 +21,7 @@ public class StaticResourceController {
     @Autowired
     private ItemMediaConverter itemMediaConverter;
 
-    @GetMapping(name = "/sliders")
+    @GetMapping("/sliders")
     public List<ItemMedia> sliderImages() {
         return mediaRepository.getSliders().stream()
                 .map(media -> itemMediaConverter.toItemMediaFromEntity(media))

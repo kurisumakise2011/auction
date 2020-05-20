@@ -33,7 +33,12 @@ public class EventListenerOnStartup {
                         entity.setMediaType("image/jpg");
                         entity.setUrl(url);
                         return entity;
-                    }).forEach(entity -> itemMediaRepository.save(entity));
+                    }).forEach(
+                    entity -> {
+                        if (!itemMediaRepository.existsByUrlAndCategory(entity.getUrl(), entity.getCategory())) {
+                            itemMediaRepository.save(entity);
+                        }
+                    });
         } catch (Exception e) {
             log.error("Error occurred while pre-initiating resources", e);
         }

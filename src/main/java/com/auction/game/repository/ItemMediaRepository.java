@@ -11,4 +11,5 @@ public interface ItemMediaRepository extends JpaRepository<ItemMediaEntity, Stri
     @Query("from ItemMediaEntity im where im.category = 'SLIDER'")
     List<ItemMediaEntity> getSliders();
 
+    boolean existsByUrlAndCategory(String url, String category);
 }

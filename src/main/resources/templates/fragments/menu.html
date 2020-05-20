@@ -1,0 +1,43 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="menu">
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                type: 'GET',
+                url: "/users/who",
+                contentType: 'application/json',
+                async: true,
+                success: function (data) {
+                    let user = JSON.parse(JSON.stringify(data));
+                    if (user.username !== "anon") {
+                        $("#menu").css('display', 'block');
+                        $("#menu-title").css('display', 'block');
+                        $("#user-info").html("<h4 class='text-white'>Hello, " + data.username +  "</h4>")
+                    } else {
+                        $("#user-info").html("<div class='text-white'>Please <a href='/registration'>sign up</a> or <a href='/login'>sign in</a> to make auctions and bids </div>")
+                    }
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+            })
+        });
+    </script>
+    <div id="user-info"></div>
+    <h4 class="text-white" id="menu-title" style="display: none;">Menu</h4>
+    <ul class="list-unstyled" id="menu" style="display: none;">
+        <li><a href="/profile" class="text-white">Profile</a></li>
+        <li><a href="/auction" class="text-white">My auctions</a></li>
+        <li><a href="/signout" class="text-white">Logout</a></li>
+    </ul>
+    <h4 class="text-white">Contact</h4>
+    <ul class="list-unstyled">
+        <li>
+            <a href="https://business.twitter.com/en/help/troubleshooting/bidding-and-auctions-faqs.html"
+               class="text-white">Follow on Twitter</a></li>
+        <li><a href="https://www.facebook.com/search/top/?q=auction&opensearch=1" class="text-white">Like
+            on Facebook</a></li>
+        <li>
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=auction@example.com&su=SUBJECT&body=BODY&bcc=auction.else@example.com"
+               class="text-white">Email me</a></li>
+    </ul>
+</div>
