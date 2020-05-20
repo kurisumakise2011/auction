@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Auction</title>
     <link type="text/css" rel="stylesheet" th:href="@{/css/styles.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/album.css}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -15,6 +16,191 @@
             crossorigin="anonymous"></script>
 </head>
 <body>
+<header th:include="fragments/headers.html :: headers"></header>
+<main role="main">
+    <div class="container">
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $.ajax({
+                    type: "GET",
+                    url: "/auctions",
+                    contentType: 'application/json',
+                    async: true,
+                    success: function (data) {
+                        let auctions = JSON.parse(JSON.stringify(data));
+                        let row = false;
+                        for (let i = 0; i < auctions.length; i++) {
+                            if (i % 3 === 0) {
+                                row = true;
+                            }
+                            let auction = auctions[i];
+                            $("#auctions").append(auctionGenBlock(row, auction));
+                        }
 
+                        function auctionGenBlock(row, auction) {
+                            let block = '';
+                            if (row) {
+                                block += '<div class="card-deck">'
+                            }
+
+                            block += '<div class="card">';
+                            block += '  <img class="card-img-top" src="'+ auction.item.medias[0].imageUrl + '" alt="Card image cap">';
+                            block += '  <div class="card-body">';
+                            block += '      <h5 class="card-title">Auction of ' + auction.item.title + '</h5>';
+                            block += '      <p class="card-text">Auction status ' + auction.status + '</p>';
+                            block += '      <p class="card-text">Current price ' + auction.currentPrice + '</p>';
+                            block += '      <p class="card-text"><small class="text-muted">Last updated' + auction.updated + '</small></p>';
+                            block += '  </div>';
+                            block += '</div>';
+
+                            if (row) {
+                                block += '</div>';
+                            }
+
+                            return block;
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err)
+                    }
+                });
+
+
+                $("#searchAuctions").click(function () {
+                    let filterTitle = $("#filter-title").val();
+                    let filterFrom = $("#filter-from").val();
+                    let filterTo = $("#filter-to").val();
+                    let filterPrice = $("#filter-price").val();
+                    $.ajax({
+                        type: "GET",
+                        url: "/auctions",
+                        contentType: 'application/json',
+                        async: true,
+                        data: JSON.stringify({
+                            "started": filterFrom,
+                            "end": filterTo,
+                            "item": {
+                                "title": filterTitle,
+                                "price": filterPrice,
+                            }
+                        }),
+                        success: function (data) {
+                            let auctions = JSON.parse(JSON.stringify(data));
+                            let row = false;
+                            for (let i = 0; i < auctions.length; i++) {
+                                if (i % 3 === 0) {
+                                    row = true;
+                                }
+                                let auction = auctions[i];
+                                $("#auctions").append(auctionGenBlock(row, auction));
+                            }
+
+                            function auctionGenBlock(row, auction) {
+                                let block = '';
+                                if (row) {
+                                    block += '<div class="card-deck">'
+                                }
+
+                                block += '<div class="card">';
+                                block += '  <img class="card-img-top" src="'+ auction.item.medias[0].imageUrl + '" alt="Card image cap">';
+                                block += '  <div class="card-body">';
+                                block += '      <h5 class="card-title">Auction of ' + auction.item.title + '</h5>';
+                                block += '      <p class="card-text">Auction status ' + auction.status + '</p>';
+                                block += '      <p class="card-text">Current price ' + auction.currentPrice + '</p>';
+                                block += '      <p class="card-text"><small class="text-muted">Last updated' + auction.updated + '</small></p>';
+                                block += '      <a href="/bids/view/"' + auction.id + ' class="btn btn-success">Put bid</a>';
+                                block += '  </div>';
+                                block += '</div>';
+
+                                if (row) {
+                                    block += '</div>';
+                                }
+
+                                return block;
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err)
+                        }
+                    });
+                });
+            });
+        </script>
+        <form id="filter">
+            <div class="form-group">
+                <input id="filter-title" class="form-control" name="title" type="text" placeholder="Title of item">
+            </div>
+            <div class="form-group">
+                <input id="filter-from" class="form-control" name="from" type="date" placeholder="From">
+            </div>
+            <div class="form-group">
+                <input id="filter-to" class="form-control" name="to" type="date" placeholder="To">
+            </div>
+            <div class="form-group">
+                <input id="filter-price" type="range" class="custom-range" name="price" min="0" max="1000000" step="1">
+            </div>
+            <button id="searchAuctions" class="btn btn-primary" type="button">Search</button>
+        </form>
+        <div id="auctions"></div>
+        <form>
+            <div class="form-group">
+                <script>
+                    $(document).ready(function () {
+                        $.ajax({
+                            type: 'GET',
+                            url: "/items",
+                            contentType: 'application/json',
+                            async: true,
+                            success: function (data) {
+                                let items = JSON.parse(JSON.stringify(data));
+                                let itemsEl = $("#items");
+                                for (let i = 0; i < items.length; i++) {
+                                    let item = items[i];
+                                    itemsEl.append('<option value="' + item.id + '">' + item.title + '</option>');
+                                }
+                            },
+                            error: function (err) {
+                                console.log(err);
+                            }
+                        })
+                    });
+                </script>
+                <select class="form-control" id="items">
+                </select>
+            </div>
+            <div class="form-group">
+                <input class="form-control" id="end" name="end" type="date"/>
+            </div>
+            <script>
+                $(document).ready(function () {
+                    $("#putUp").click(function () {
+                        let end = $("#end").val();
+                        let item = $("#items").val();
+                        $.ajax({
+                            type: "POST",
+                            url: "/auctions",
+                            contentType: 'application/json',
+                            async: true,
+                            data: JSON.stringify({
+                                "end": end,
+                                "item": {
+                                    "id": item.val(),
+                                }
+                            }),
+                            success: function () {
+                                alert('Created');
+                            },
+                            error: function (err) {
+                                console.log(err);
+                            }
+                        });
+                    });
+                });
+            </script>
+            <button id="putUp" type="button" class="btn btn-primary">Put up for auction</button>
+        </form>
+    </div>
+</main>
+<footer th:include="fragments/footer.html :: footer"></footer>
 </body>
 </html>

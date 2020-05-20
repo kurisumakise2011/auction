@@ -11,7 +11,7 @@
                     if (user.username !== "anon") {
                         $("#menu").css('display', 'block');
                         $("#menu-title").css('display', 'block');
-                        $("#user-info").html("<h4 class='text-white'>Hello, " + data.username +  "</h4>")
+                        $("#user-info").html("<h4 class='text-white'>Hello, " + data.username +  "</h4>");
                     } else {
                         $("#user-info").html("<div class='text-white'>Please <a href='/registration'>sign up</a> or <a href='/login'>sign in</a> to make auctions and bids </div>")
                     }
@@ -25,6 +25,7 @@
     <div id="user-info"></div>
     <h4 class="text-white" id="menu-title" style="display: none;">Menu</h4>
     <ul class="list-unstyled" id="menu" style="display: none;">
+        <li><a href="/main" class="text-white">Main</a></li>
         <li><a href="/profile" class="text-white">Profile</a></li>
         <li><a href="/auction" class="text-white">My auctions</a></li>
         <li><a href="/signout" class="text-white">Logout</a></li>

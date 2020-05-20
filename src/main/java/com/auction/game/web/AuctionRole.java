@@ -1,5 +1,5 @@
 package com.auction.game.web;
 
 public enum AuctionRole {
-    PARTICIPANT, AUTHOR, WINNER
+    PARTICIPANT, AUTHOR, WINNER, NONE
 }

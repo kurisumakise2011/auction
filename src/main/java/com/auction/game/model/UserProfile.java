@@ -6,7 +6,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
-import static com.auction.game.controller.TokenController.ANONYMOUS;
+import static com.auction.game.controller.ApplicationController.ANONYMOUS;
 
 @Data
 public class UserProfile {

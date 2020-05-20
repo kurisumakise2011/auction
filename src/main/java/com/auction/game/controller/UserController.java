@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
-import static com.auction.game.controller.TokenController.ANONYMOUS;
-import static com.auction.game.controller.TokenController.id;
+import static com.auction.game.controller.ApplicationController.ANONYMOUS;
+import static com.auction.game.controller.ApplicationController.id;
 
 @RequestMapping("/users")
 @RestController

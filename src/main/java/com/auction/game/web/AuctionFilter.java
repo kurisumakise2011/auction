@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 public class AuctionFilter {
     private Timestamp started;
     private Timestamp end;
-    private boolean active;
+    private boolean active = true;
     private ItemFilter item;
-    private AuctionRole role;
+    private AuctionRole role = AuctionRole.NONE;
 }

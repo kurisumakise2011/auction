@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Profile</title>
     <link type="text/css" rel="stylesheet" th:href="@{/css/styles.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/carousel.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/album.css}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -16,6 +18,114 @@
             crossorigin="anonymous"></script>
 </head>
 <body>
+<header th:include="fragments/headers.html :: headers"></header>
+<main role="main">
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                type: 'GET',
+                url: "/users/who",
+                contentType: 'application/json',
+                async: true,
+                success: function (data) {
+                    let user = JSON.parse(JSON.stringify(data));
+                    $("#id").text("ID: " + user.id);
+                    $("#username").text("Username: " + user.username);
+                    $("#email").text("Email: " + user.email);
+                    $("#registered").text("Registered date: " + user.settings.registered);
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+            })
+        });
+    </script>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                <h4 id="id"></h4>
+            </div>
+            <div class="col-sm">
+                <h4 id="username"></h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm">
+                <h4 id="email"></h4>
+            </div>
+            <div class="col-sm">
+                <h4 id="registered"></h4>
+            </div>
+        </div>
+        <div class="marketing">
+            <h3>My Items</h3>
+            <script>
+                $(document).ready(function () {
+                    $.ajax({
+                        type: 'GET',
+                        url: "/items",
+                        contentType: 'application/json',
+                        async: true,
+                        success: function (data) {
+                            let items = JSON.parse(JSON.stringify(data));
+                            let itemsEl = $("#items");
+                            let row = false;
+                            for (let i = 0; i < items.length; i++) {
+                                let item = items[i];
+                                if (i % 3 === 0) {
+                                    row = true;
+                                }
+                                itemsEl.append(genItemBlock(row, item));
+                            }
 
+                            function genItemBlock(row, item) {
+                                let block = '';
+                                if (row) {
+                                    block += '<div class="row">'
+                                }
+                                block += '<div class="col-lg-4">'
+                                    + '<img class="rounded-circle" src="' + item.medias[0].imageUrl + '" alt="Generic placeholder image" width="140" height="140"'
+                                    + '<h2>' + item.title + '</h2>'
+                                    + '<p>' + item.description + '</p>'
+                                    + '<p>' + item.price + '</p>'
+                                    + ' <p><a id="viewItem" class="btn btn-secondary" href="/items/view/' + item.id + '" role="button">View details</a></p>'
+                                    + '</div>';
+                                if (row) {
+                                    block += '</div>';
+                                }
+                                return block;
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+                    })
+                });
+            </script>
+            <div id="items">
+            </div>
+        </div>
+        <form>
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" class="form-control" id="title" name="title" placeholder="Title of item">
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea class="form-control" id="description" name="description" placeholder="Description"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="price">Price</label>
+                <input type="number" class="form-control" id="price" name="price" placeholder="Price">
+            </div>
+            <div class="form-group">
+                <label for="medias">Image url</label>
+                <input id="medias" type="text" class="form-control" name="medias" placeholder="Url to image">
+            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+    </div>
+</main>
+<footer th:include="fragments/footer.html :: footer"></footer>
 </body>
 </html>

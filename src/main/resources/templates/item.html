@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Item</title>
     <link type="text/css" rel="stylesheet" th:href="@{/css/styles.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/album.css}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -16,6 +17,64 @@
             crossorigin="anonymous"></script>
 </head>
 <body>
-
+<header th:include="fragments/headers.html :: headers"></header>
+<main role="main">
+    <script>
+        $(document).ready(function () {
+            let itemId = $.cookie('itemId');
+            $.ajax({
+                type: 'GET',
+                url: "/items/" + itemId,
+                contentType: 'application/json',
+                async: true,
+                success: function (data) {
+                    let item = JSON.parse(JSON.stringify(data));
+                    $("#media").attr("src", item.medias[0].imageUrl);
+                    $("#title").text(item.title);
+                    $("#description").text(item.description);
+                    $("#price").text(item.price + "$");
+                    $("#hidden").text(item.hidden);
+                    $("#published").text(item.published);
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        });
+    </script>
+    <div class="card mb-3">
+        <img id="media" class="card-img-top" src="" alt="Card image cap">
+        <div class="card-body">
+            <h5 class="card-title" id="title"></h5>
+            <p class="card-text" id="description"></p>
+            <p class="card-text" id="price"></p>
+            <p class="card-text" id="hidden"></p>
+            <p class="card-text"><small id="published" class="text-muted"></small></p>
+            <script>
+                $(document).ready(function () {
+                    let enteredTitle = prompt('Enter item title to delete');
+                    if (enteredTitle === $("#title").text()) {
+                        let itemId = $.cookie('itemId');
+                        $.ajax({
+                            type: 'DELETE',
+                            url: "/items/" + itemId,
+                            async: true,
+                            success: function () {
+                                alert('Removed');
+                            },
+                            error: function (err) {
+                                console.log(err);
+                            }
+                        });
+                    } else {
+                        alert('Incorrect title name');
+                    }
+                });
+            </script>
+            <button class="btn btn-danger">Remove</button>
+        </div>
+    </div>
+</main>
+<footer th:include="fragments/footer.html :: footer"></footer>
 </body>
 </html>

@@ -3,12 +3,10 @@ package com.auction.game.controller;
 import com.auction.game.model.UserDetailsAdapter;
 import com.auction.game.service.JwtTokenService;
 import com.auction.game.web.JwtRequest;
-import com.auction.game.web.JwtResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -19,16 +17,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -40,8 +35,10 @@ import static com.auction.game.web.JwtRequestFilter.TOKEN;
 @Slf4j
 @Controller
 @CrossOrigin
-public class TokenController {
+public class ApplicationController {
     public static final String ANONYMOUS = "anonymous";
+    public static final String ITEM_ID = "itemId";
+    public static final String AUCTION_ID = "auctionId";
     @Qualifier("userServiceImpl")
     @Autowired
     private UserDetailsService userDetailsService;
@@ -51,7 +48,6 @@ public class TokenController {
 
     @Autowired
     private JwtTokenService jwtTokenService;
-
 
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     public String createAuthenticationToken(@ModelAttribute JwtRequest request, ModelMap model, HttpServletResponse response) {
@@ -72,6 +68,18 @@ public class TokenController {
         request.getSession().invalidate();
         response.addCookie(new Cookie(TOKEN, null));
         return "redirect:/login";
+    }
+
+    @GetMapping("/items/view/{id}")
+    public String viewItems(@PathVariable String id, HttpServletResponse response) {
+       response.addCookie(new Cookie(ITEM_ID, id));
+       return "item";
+    }
+
+    @GetMapping("/bids/view/{id}")
+    public String viewAuction(@PathVariable String id, HttpServletResponse response) {
+        response.addCookie(new Cookie(AUCTION_ID, id));
+        return "bid";
     }
 
     private String authenticate(String username, String password) {

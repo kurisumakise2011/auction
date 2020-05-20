@@ -3,11 +3,14 @@ package com.auction.game.service;
 import com.auction.game.converter.AuctionConverter;
 import com.auction.game.entity.AuctionEntity;
 import com.auction.game.entity.AuctioneerEntity;
+import com.auction.game.entity.ItemEntity;
 import com.auction.game.exception.NotFoundSuchEntityException;
 import com.auction.game.exception.UnknownUserException;
 import com.auction.game.model.Auction;
+import com.auction.game.model.AuctionStatus;
 import com.auction.game.repository.AuctionRepository;
 import com.auction.game.repository.AuctioneerRepository;
+import com.auction.game.repository.ItemRepository;
 import com.auction.game.web.AuctionFilter;
 import com.auction.game.web.AuctionRole;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +30,9 @@ public class AuctionServiceImpl implements AuctionService {
     private AuctionRepository auctionRepository;
 
     @Autowired
+    private ItemRepository itemRepository;
+
+    @Autowired
     private AuctionConverter auctionConverter;
 
     @Override
@@ -36,8 +42,12 @@ public class AuctionServiceImpl implements AuctionService {
             throw new UnknownUserException("Unknown user");
         }
 
+        ItemEntity itemEntity = itemRepository.findById(userId, auction.getItem().getId());
+
         AuctionEntity auctionEntity = auctionConverter.toAuctionEntity(auction);
         auctionEntity.setAuthor(auctioneer);
+        auctionEntity.setStatus(AuctionStatus.ACTIVE);
+        auctionEntity.setAuctionItemEntity(itemEntity);
 
         return auctionConverter.toAuctionFromEntity(auctionRepository.save(auctionEntity));
     }

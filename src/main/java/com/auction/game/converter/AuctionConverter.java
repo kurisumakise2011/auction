@@ -2,10 +2,12 @@ package com.auction.game.converter;
 
 import com.auction.game.entity.AuctionEntity;
 import com.auction.game.model.Auction;
+import com.auction.game.model.Bid;
 import com.auction.game.web.AuctionDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @Component
@@ -64,6 +66,7 @@ public class AuctionConverter {
         dto.setUpdated(auction.getUpdated());
         dto.setItem(itemConverter.toItemDto(auction.getItem()));
         dto.setBids(auction.getBids().stream().map(bid -> bidConverter.toBidDto(bid)).collect(Collectors.toList()));
+        dto.setCurrentPrice(auction.getBids().stream().max(Comparator.comparing(Bid::getPrice)).map(Bid::getPrice).orElse(auction.getItem().getPrice()));
 
         return dto;
     }
