@@ -6,6 +6,7 @@ import com.auction.game.entity.AuctioneerEntity;
 import com.auction.game.entity.ItemEntity;
 import com.auction.game.exception.NotFoundSuchEntityException;
 import com.auction.game.exception.UnknownUserException;
+import com.auction.game.exception.UnprocessableEntityException;
 import com.auction.game.model.Auction;
 import com.auction.game.model.AuctionStatus;
 import com.auction.game.repository.AuctionRepository;
@@ -13,11 +14,19 @@ import com.auction.game.repository.AuctioneerRepository;
 import com.auction.game.repository.ItemRepository;
 import com.auction.game.web.AuctionFilter;
 import com.auction.game.web.AuctionRole;
+import com.auction.game.web.ItemFilter;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Component
@@ -48,8 +57,12 @@ public class AuctionServiceImpl implements AuctionService {
             throw new NotFoundSuchEntityException("No such item");
         }
 
-        AuctionEntity auctionEntity = new AuctionEntity();
+        if (BooleanUtils.isFalse(itemEntity.getHidden())) {
+            throw new UnprocessableEntityException("Item already on auction");
+        }
+        itemEntity.setHidden(false);
 
+        AuctionEntity auctionEntity = new AuctionEntity();
         auctionEntity.setEnd(auction.getEnd());
         auctionEntity.setAuthor(auctioneer);
         auctionEntity.setAuctionItemEntity(itemEntity);
@@ -80,6 +93,65 @@ public class AuctionServiceImpl implements AuctionService {
 
     @Override
     public List<Auction> getAllAuctions(AuctionFilter filter, String userId) {
+        return resolveAuctions(filter, userId)
+                .stream()
+                .filter(getStatusFilter(filter))
+                .filter(getTitlePredicate(filter))
+                .filter(getPricePredicate(filter))
+                .filter(getFromPredicate(filter))
+                .filter(getToPredicate(filter))
+                .collect(Collectors.toList());
+    }
+
+    private Predicate<Auction> getStatusFilter(AuctionFilter filter) {
+        return ObjectUtils.isNotEmpty(filter.getStatus()) && filter.getStatus() != AuctionStatus.ALL
+                ? auction -> auction.getStatus().equals(filter.getStatus())
+                : auction -> true;
+    }
+
+    private Predicate<Auction> getTitlePredicate(AuctionFilter filter) {
+        return StringUtils.isNotBlank(Optional.ofNullable(filter.getItem())
+                .map(ItemFilter::getTitle)
+                .orElse(null))
+                ? auction -> {
+                        String actual = auction.getItem().getTitle();
+                        String expected = filter.getItem().getTitle();
+                        return actual.contains(expected) || actual.startsWith(expected) || actual.endsWith(expected);
+                }
+                : auction -> true;
+    }
+
+    private Predicate<Auction> getPricePredicate(AuctionFilter filter) {
+        return ObjectUtils.isNotEmpty(Optional.ofNullable(filter.getItem()).map(ItemFilter::getPrice).orElse(null))
+                ? auction -> {
+                        Double actual = auction.getItem().getPrice();
+                        Double expected = filter.getItem().getPrice();
+                        return Double.compare(expected, actual) >= 0;
+                }
+                : auction -> true;
+    }
+
+    private Predicate<Auction> getFromPredicate(AuctionFilter filter) {
+        return ObjectUtils.isNotEmpty(filter.getStarted())
+                ? auction -> {
+                        Timestamp actual = auction.getStarted();
+                        Timestamp expected = filter.getStarted();
+                        return actual.after(expected) || actual.equals(expected);
+                }
+                : auction -> true;
+    }
+
+    private Predicate<Auction> getToPredicate(AuctionFilter filter) {
+        return ObjectUtils.isNotEmpty(filter.getEnd())
+                ? auction -> {
+                    Timestamp actual = auction.getEnd();
+                    Timestamp expected = filter.getEnd();
+                    return actual.after(expected) || actual.equals(expected);
+                }
+                : auction -> true;
+    }
+
+    private List<Auction> resolveAuctions(AuctionFilter filter, String userId) {
         AuctioneerEntity auctioneer = auctioneerRepository.findById(userId).orElse(null);
         if (auctioneer == null) {
             throw new UnknownUserException("Unknown user");

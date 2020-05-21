@@ -2,6 +2,7 @@ package com.auction.game.controller;
 
 import com.auction.game.converter.AuctionConverter;
 import com.auction.game.model.UserProfile;
+import com.auction.game.model.UserRole;
 import com.auction.game.service.AuctionService;
 import com.auction.game.service.UserService;
 import com.auction.game.web.AuctionDto;
@@ -32,7 +33,9 @@ public class AdminController {
 
     @GetMapping("/users")
     public List<UserProfile> userProfiles() {
-        return userService.users();
+        return userService.users().stream()
+                .filter(user -> user.getSettings().getRole() != UserRole.ADMIN)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/auctions")
@@ -43,7 +46,7 @@ public class AdminController {
     @ResponseStatus(code = HttpStatus.OK)
     @PutMapping("/users/{id}/ban")
     public void banUser(@PathVariable String id) {
-        userService.banUser(false, id);
+        userService.banUser(true, id);
     }
 
     @ResponseStatus(code = HttpStatus.OK)

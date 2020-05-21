@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 
 @Data
 public class ProfileSettings {
+    private String id;
     private UserRole role;
     private Boolean banned;
     private Boolean online;

@@ -15,7 +15,7 @@ public interface UserProfileRepository extends JpaRepository<UserProfileEntity, 
     String findIdByUsername(String username);
 
     @Modifying
-    @Query("update ProfileSettingsEntity s set s.banned = ?1 where s.id = ?2")
+    @Query("update ProfileSettingsEntity s set s.banned = ?1 where s.id = (select ss.id from UserProfileEntity u join u.settings ss where u.id = ?2)")
     int updateBanned(boolean banned, String id);
 
 }

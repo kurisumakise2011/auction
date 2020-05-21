@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,7 +40,11 @@ public class AuctionController {
 
     @PostMapping("/filter/auctions")
     public List<AuctionDto> getAuctions(@RequestBody AuctionFilter filter) {
-        return auctionService.getAllAuctions(filter, id()).stream().map(auction -> auctionConverter.toAuctionDto(auction)).collect(Collectors.toList());
+        return auctionService.getAllAuctions(filter, id())
+                .stream()
+                .map(auction -> auctionConverter.toAuctionDto(auction))
+                .sorted(Comparator.comparing(AuctionDto::getStatus))
+                .collect(Collectors.toList());
     }
 
     @PutMapping("/auctions/{id}")

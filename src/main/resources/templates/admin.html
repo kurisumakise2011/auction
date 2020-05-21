@@ -27,12 +27,13 @@
                     let id = $("#inBan").val();
 
                     $.ajax({
-                        type: "GET",
+                        type: "PUT",
                         url: "/admin/users/" + id + "/ban",
                         contentType: 'application/json',
                         async: true,
                         success: function () {
-                            alert('Banned')
+                            alert('Banned');
+                            window.location.replace('http://localhost:8080/admin');
                         },
                         error: function (err) {
                             console.log(err);
@@ -48,7 +49,8 @@
                         contentType: 'application/json',
                         async: true,
                         success: function () {
-                            alert('Unbanned')
+                            alert('Unbanned');
+                            window.location.replace('http://localhost:8080/admin');
                         },
                         error: function (err) {
                             console.log(err);
@@ -64,7 +66,8 @@
                         contentType: 'application/json',
                         async: true,
                         success: function () {
-                            alert('Abandoned')
+                            alert('Abandoned');
+                            window.location.replace('http://localhost:8080/admin');
                         },
                         error: function (err) {
                             console.log(err);
@@ -74,11 +77,11 @@
 
                 $.ajax({
                     type: "GET",
-                    url: "/admin/users",
+                    url: "/admin/auctions",
                     contentType: 'application/json',
                     async: true,
                     success: function (data) {
-                        let auctions = JSON.stringify(data);
+                        let auctions = JSON.parse(JSON.stringify(data));
                         let auctionsTable = $("#auctionsTable");
 
                         for (let i = 0; i < auctions.length; i++) {
@@ -90,11 +93,6 @@
                                 '<th>' + auction.started + '</th>' +
                                 '<th>' + auction.end + '</th>' +
                                 '<th>' + auction.updated + '</th>';
-                            if (auction.status !== 'ABANDONED') {
-                                block += '<th><button type="button" class="btn btn-danger">Abandon</button></th>';
-                            } else {
-                                block += '<th>Auction abandoned</th>';
-                            }
                             block += '</tr>';
                             auctionsTable.append(block);
                         }
@@ -110,7 +108,7 @@
                     contentType: 'application/json',
                     async: true,
                     success: function (data) {
-                        let users = JSON.stringify(data);
+                        let users = JSON.parse(JSON.stringify(data));
                         let usersTable = $("#usersTable");
 
                         for (let i = 0; i < users.length; i++) {
@@ -147,14 +145,14 @@
         </table>
         <form style="margin: 50px 0;">
             <div class="form-group">
-                <input type="text" name="inBan" id="inBan" class="form-control">
+                <label for="inBan">Please enter user id to ban</label><input type="text" name="inBan" id="inBan" class="form-control">
             </div>
             <button type="button" id="butBan" class="btn btn-danger">Ban</button>
         </form>
 
         <form style="margin: 50px 0;">
             <div class="form-group">
-                <input type="text" name="inUnban" id="inUnban" class="form-control">
+                <label for="inUnban">Please enter user id to unban</label><input type="text" name="inUnban" id="inUnban" class="form-control">
             </div>
             <button type="button" id="butUnban" class="btn btn-danger">Unban</button>
         </form>
@@ -169,7 +167,6 @@
                 <th scope="col">Started</th>
                 <th scope="col">End</th>
                 <th scope="col">Updated</th>
-                <th scope="col">Abandon</th>
             </tr>
             </thead>
             <tbody id="auctionsTable">
@@ -178,7 +175,7 @@
 
         <form style="margin: 50px 0;">
             <div class="form-group">
-                <input type="text" name="inAbandon" id="inAbandon" class="form-control">
+                <label for="inAbandon">Please enter auction id to abandon</label><input type="text" name="inAbandon" id="inAbandon" class="form-control">
             </div>
             <button type="button" id="butAbandon" class="btn btn-danger">Abandon</button>
         </form>

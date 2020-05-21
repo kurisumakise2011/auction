@@ -20,62 +20,70 @@
 <body>
 <header th:include="fragments/headers.html :: headers"></header>
 <main role="main">
-    <script>
-        $(document).ready(function () {
-            let itemId = $.cookie('itemId');
-            $.ajax({
-                type: 'GET',
-                url: "/items/" + itemId,
-                contentType: 'application/json',
-                async: true,
-                success: function (data) {
-                    let item = JSON.parse(JSON.stringify(data));
-                    $("#media").attr("src", item.medias[0].imageUrl);
-                    $("#title").text('Title: ' + item.title);
-                    $("#description").text('Description: ' + item.description);
-                    $("#price").text('Price: ' + item.price + "$");
-                    $("#hidden").text('Hidden: ' + item.hidden);
-                    $("#published").text('Published time: ' + item.published);
-                },
-                error: function (err) {
-                    console.log(err);
-                }
-            });
-        });
-    </script>
-    <div class="card mb-3">
-        <img id="media" class="card-img-top" width="50%" height="50%" src="" alt="Item image">
-        <div class="card-body">
-            <h5 class="card-title" id="title"></h5>
-            <p class="card-text" id="description"></p>
-            <p class="card-text" id="price"></p>
-            <p class="card-text" id="hidden"></p>
-            <p class="card-text"><small id="published" class="text-muted"></small></p>
+    <div class="container" style="margin: 100px 0;">
+        <div class="row">
+            <div class="col-sm-3"></div>
             <script>
                 $(document).ready(function () {
-                    $("#removeItem").click(function () {
-                        let enteredTitle = prompt('Enter item title to delete');
-                        if ('Title: ' + enteredTitle === $("#title").text()) {
-                            let itemId = $.cookie('itemId');
-                            $.ajax({
-                                type: 'DELETE',
-                                url: "/items/" + itemId,
-                                async: true,
-                                success: function () {
-                                    alert('Removed');
-                                    window.location.replace('http://localhost:8080/profile')
-                                },
-                                error: function (err) {
-                                    console.log(err);
-                                }
-                            });
-                        } else {
-                            alert('Incorrect title name');
+                    let itemId = $.cookie('itemId');
+                    $.ajax({
+                        type: 'GET',
+                        url: "/items/" + itemId,
+                        contentType: 'application/json',
+                        async: true,
+                        success: function (data) {
+                            let item = JSON.parse(JSON.stringify(data));
+                            $("#media").attr("src", item.medias[0].imageUrl);
+                            $("#title").text('Title: ' + item.title);
+                            $("#description").text('Description: ' + item.description);
+                            $("#price").text('Price: ' + item.price + "$");
+                            $("#hidden").text('Hidden: ' + item.hidden);
+                            $("#published").text('Published time: ' + item.published);
+                        },
+                        error: function (err) {
+                            console.log(err);
                         }
                     });
                 });
             </script>
-            <button id="removeItem" class="btn btn-danger">Remove</button>
+            <div class="col-sm-6">
+                <div class="card">
+                    <img id="media" class="card-img-top" width="50%" height="50%" src="" alt="Item image">
+                    <div class="card-body">
+                        <h5 class="card-title" id="title"></h5>
+                        <p class="card-text" id="description"></p>
+                        <p class="card-text" id="price"></p>
+                        <p class="card-text" id="hidden"></p>
+                        <p class="card-text"><small id="published" class="text-muted"></small></p>
+                        <script>
+                            $(document).ready(function () {
+                                $("#removeItem").click(function () {
+                                    let enteredTitle = prompt('Enter item title to delete');
+                                    if ('Title: ' + enteredTitle === $("#title").text()) {
+                                        let itemId = $.cookie('itemId');
+                                        $.ajax({
+                                            type: 'DELETE',
+                                            url: "/items/" + itemId,
+                                            async: true,
+                                            success: function () {
+                                                alert('Removed');
+                                                window.location.replace('http://localhost:8080/profile')
+                                            },
+                                            error: function (err) {
+                                                console.log(err);
+                                            }
+                                        });
+                                    } else {
+                                        alert('Incorrect title name');
+                                    }
+                                });
+                            });
+                        </script>
+                        <button id="removeItem" class="btn btn-danger">Remove</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3"></div>
         </div>
     </div>
 </main>

@@ -40,8 +40,9 @@ public class ItemServiceImpl implements ItemService {
             throw new UnknownUserException("Unknown user");
         }
         entity.setHolder(userProfileEntity.getAuctioneerEntity());
-
+        entity.setHidden(true);
         entity.getMedias().forEach(itemMedia -> itemMedia.setItemEntity(entity));
+
         ItemEntity save = itemRepository.save(entity);
 
         return itemConverter.toItemFromEntity(save);

@@ -19,8 +19,7 @@
 <body class="text-center">
     <form class="form-signin" id="form-login" th:action="@{/authenticate}" method="post">
         <div class="container">
-            <div th:if="${error}">
-                Invalid login or password
+            <div th:if="${error}" th:text="${error}">
             </div>
             <img class="mb-4" src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
             <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>

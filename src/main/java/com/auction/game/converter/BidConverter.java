@@ -20,6 +20,7 @@ public class BidConverter {
         dto.setOrder(bid.getOrder());
         dto.setPrice(bid.getPrice());
         dto.setWon(bid.isWon());
+        dto.setAuthor(bid.getAuthor());
 
         return dto;
     }

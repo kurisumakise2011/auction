@@ -11,4 +11,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "content")
 public class AutoStartProperty {
     private String sliders;
+    private String admin;
+    private String password;
+    private String email;
 }

@@ -3,6 +3,7 @@ package com.auction.game.service;
 import com.auction.game.converter.UserProfileConverter;
 import com.auction.game.entity.AuctioneerEntity;
 import com.auction.game.entity.CredentialEntity;
+import com.auction.game.entity.ProfileSettingsEntity;
 import com.auction.game.entity.UserProfileEntity;
 import com.auction.game.exception.UnknownUserException;
 import com.auction.game.model.ProfileSettings;
@@ -10,6 +11,7 @@ import com.auction.game.model.UserDetailsAdapter;
 import com.auction.game.model.UserProfile;
 import com.auction.game.model.UserRole;
 import com.auction.game.repository.CredentialRepository;
+import com.auction.game.repository.ProfileSettingsRepository;
 import com.auction.game.repository.UserProfileRepository;
 import com.auction.game.web.LoginRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Autowired
     private UserProfileConverter userProfileConverter;
+
+    @Autowired
+    private ProfileSettingsRepository profileSettingsRepository;
 
     @Autowired
     private PasswordEncoder encoder;
@@ -102,8 +107,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void banUser(boolean banned, String settingsId) {
-        userProfileRepository.updateBanned(banned, settingsId);
+    public void banUser(boolean banned, String userId) {
+        UserProfileEntity entity = userProfileRepository.findById(userId).orElse(null);
+        if (entity == null) {
+            return;
+        }
+        entity.getSettings().setBanned(banned);
+        userProfileRepository.save(entity);
     }
 
     @Override

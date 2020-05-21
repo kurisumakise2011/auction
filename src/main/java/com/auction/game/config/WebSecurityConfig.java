@@ -1,5 +1,6 @@
 package com.auction.game.config;
 
+import com.auction.game.model.UserRole;
 import com.auction.game.web.JwtAuthenticationEntryPoint;
 import com.auction.game.web.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,12 +55,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors().disable()
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/", "/main", "/authenticate", "/registration", "/users/registration", "/resources/**", "/users/who")
+                .antMatchers("/", "/main", "/resources/**", "/users/who")
                 .permitAll()
                 .and()
                 .authorizeRequests()
+                .antMatchers("/authenticate", "/registration", "/users/registration", "/login")
+                .not().hasAnyAuthority(UserRole.ADMIN.name(), UserRole.REGISTERED.name(), UserRole.PUBLISHER.name())
+                .and()
+                .authorizeRequests()
                 .antMatchers("/admin/**", "/admin")
-                .hasRole("ADMIN")
+                .hasAuthority("ADMIN")
                 .and()
                 .authorizeRequests()
                 .anyRequest()

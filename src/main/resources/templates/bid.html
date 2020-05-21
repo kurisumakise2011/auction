@@ -106,7 +106,7 @@
                 </script>
 
                 <div id="auctionView" style="margin: 100px 0;">
-                    <div id="border" class="card border-success mb-3" style="max-width: 18rem;">
+                    <div id="border" class="card border-success">
                         <div id="title" class="card-header bg-transparent border-success"></div>
                         <div id="cardBody" class="card-body text-success">
                             <h5 id="price" class="card-title"></h5>
@@ -130,9 +130,10 @@
                                             }),
                                             success: function () {
                                                 alert('Bid raised');
+                                                window.location.replace('http://localhost:8080/bid');
                                             },
                                             error: function (err) {
-                                                alert(err.message);
+                                                alert(err.responseText);
                                                 console.log(err);
                                             }
                                         });
