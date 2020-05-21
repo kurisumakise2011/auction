@@ -4,6 +4,8 @@ import com.auction.game.entity.AuctionEntity;
 import com.auction.game.model.Auction;
 import com.auction.game.model.Bid;
 import com.auction.game.web.AuctionDto;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,7 +33,11 @@ public class AuctionConverter {
         auction.setStarted(auctionDto.getStarted());
         auction.setUpdated(auctionDto.getUpdated());
         auction.setItem(itemConverter.toItemFromDto(auctionDto.getItem()));
-        auction.setBids(auctionDto.getBids().stream().map(bid -> bidConverter.toBidFromDto(bid)).collect(Collectors.toList()));
+        auction.setBids(
+                CollectionUtils.emptyIfNull(auctionDto.getBids())
+                        .stream()
+                        .map(bid -> bidConverter.toBidFromDto(bid))
+                        .collect(Collectors.toList()));
 
         return auction;
     }
@@ -48,7 +54,10 @@ public class AuctionConverter {
         auction.setStarted(entity.getStarted());
         auction.setUpdated(entity.getUpdated());
         auction.setItem(itemConverter.toItemFromEntity(entity.getAuctionItemEntity()));
-        auction.setBids(entity.getBids().stream().map(bid -> bidConverter.toBidFromEntity(bid)).collect(Collectors.toList()));
+        auction.setBids(
+                CollectionUtils.emptyIfNull(entity.getBids())
+                        .stream()
+                        .map(bid -> bidConverter.toBidFromEntity(bid)).collect(Collectors.toList()));
 
         return auction;
     }
@@ -65,8 +74,15 @@ public class AuctionConverter {
         dto.setStatus(auction.getStatus());
         dto.setUpdated(auction.getUpdated());
         dto.setItem(itemConverter.toItemDto(auction.getItem()));
-        dto.setBids(auction.getBids().stream().map(bid -> bidConverter.toBidDto(bid)).collect(Collectors.toList()));
-        dto.setCurrentPrice(auction.getBids().stream().max(Comparator.comparing(Bid::getPrice)).map(Bid::getPrice).orElse(auction.getItem().getPrice()));
+        dto.setBids(CollectionUtils.emptyIfNull(auction.getBids())
+                .stream()
+                .map(bid -> bidConverter.toBidDto(bid))
+                .collect(Collectors.toList()));
+        dto.setCurrentPrice(CollectionUtils.emptyIfNull(auction.getBids())
+                .stream()
+                .max(Comparator.comparing(Bid::getPrice))
+                .map(Bid::getPrice)
+                .orElse(auction.getItem().getPrice()));
 
         return dto;
     }
@@ -79,11 +95,16 @@ public class AuctionConverter {
         AuctionEntity entity = new AuctionEntity();
         entity.setStatus(auction.getStatus());
         entity.setEnd(auction.getEnd());
-        entity.setId(auction.getId());
+        if (StringUtils.isNotBlank(auction.getId())) {
+            entity.setId(auction.getId());
+        }
         entity.setStarted(auction.getStarted());
         entity.setUpdated(auction.getUpdated());
         entity.setAuctionItemEntity(itemConverter.toItemEntity(auction.getItem()));
-        entity.setBids(auction.getBids().stream().map(bid -> bidConverter.toBidEntity(bid)).collect(Collectors.toList()));
+        entity.setBids(CollectionUtils.emptyIfNull(auction.getBids())
+                .stream()
+                .map(bid -> bidConverter.toBidEntity(bid))
+                .collect(Collectors.toList()));
 
         return entity;
     }

@@ -63,6 +63,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     private String lookupToken(Cookie[] cookies) {
+        if (cookies == null) {
+            return null;
+        }
         return Arrays.stream(cookies)
                 .filter(cookie -> TOKEN.equals(cookie.getName()))
                 .map(Cookie::getValue)

@@ -3,6 +3,7 @@ package com.auction.game.entity;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -14,7 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
-import java.math.BigDecimal;
+
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
@@ -37,8 +38,9 @@ public class ItemEntity {
 
     @Column(nullable = false)
     @Digits(integer=20, fraction=10)
-    private BigDecimal price;
+    private Double price;
 
+    @CreationTimestamp
     @Column(name = "published", nullable = false)
     private Timestamp published;
 

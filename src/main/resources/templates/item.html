@@ -15,6 +15,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
             crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 </head>
 <body>
 <header th:include="fragments/headers.html :: headers"></header>
@@ -30,11 +31,11 @@
                 success: function (data) {
                     let item = JSON.parse(JSON.stringify(data));
                     $("#media").attr("src", item.medias[0].imageUrl);
-                    $("#title").text(item.title);
-                    $("#description").text(item.description);
-                    $("#price").text(item.price + "$");
-                    $("#hidden").text(item.hidden);
-                    $("#published").text(item.published);
+                    $("#title").text('Title: ' + item.title);
+                    $("#description").text('Description: ' + item.description);
+                    $("#price").text('Price: ' + item.price + "$");
+                    $("#hidden").text('Hidden: ' + item.hidden);
+                    $("#published").text('Published time: ' + item.published);
                 },
                 error: function (err) {
                     console.log(err);
@@ -43,7 +44,7 @@
         });
     </script>
     <div class="card mb-3">
-        <img id="media" class="card-img-top" src="" alt="Card image cap">
+        <img id="media" class="card-img-top" width="50%" height="50%" src="" alt="Item image">
         <div class="card-body">
             <h5 class="card-title" id="title"></h5>
             <p class="card-text" id="description"></p>
@@ -52,26 +53,29 @@
             <p class="card-text"><small id="published" class="text-muted"></small></p>
             <script>
                 $(document).ready(function () {
-                    let enteredTitle = prompt('Enter item title to delete');
-                    if (enteredTitle === $("#title").text()) {
-                        let itemId = $.cookie('itemId');
-                        $.ajax({
-                            type: 'DELETE',
-                            url: "/items/" + itemId,
-                            async: true,
-                            success: function () {
-                                alert('Removed');
-                            },
-                            error: function (err) {
-                                console.log(err);
-                            }
-                        });
-                    } else {
-                        alert('Incorrect title name');
-                    }
+                    $("#removeItem").click(function () {
+                        let enteredTitle = prompt('Enter item title to delete');
+                        if ('Title: ' + enteredTitle === $("#title").text()) {
+                            let itemId = $.cookie('itemId');
+                            $.ajax({
+                                type: 'DELETE',
+                                url: "/items/" + itemId,
+                                async: true,
+                                success: function () {
+                                    alert('Removed');
+                                    window.location.replace('http://localhost:8080/profile')
+                                },
+                                error: function (err) {
+                                    console.log(err);
+                                }
+                            });
+                        } else {
+                            alert('Incorrect title name');
+                        }
+                    });
                 });
             </script>
-            <button class="btn btn-danger">Remove</button>
+            <button id="removeItem" class="btn btn-danger">Remove</button>
         </div>
     </div>
 </main>

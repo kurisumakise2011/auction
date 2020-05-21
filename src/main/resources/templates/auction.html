@@ -14,48 +14,42 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
             crossorigin="anonymous"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 </head>
 <body>
 <header th:include="fragments/headers.html :: headers"></header>
 <main role="main">
-    <div class="container">
+    <div class="container" style="margin: 100px 0;">
         <script type="text/javascript">
             $(document).ready(function () {
                 $.ajax({
-                    type: "GET",
-                    url: "/auctions",
+                    type: "POST",
+                    url: "/filter/auctions",
                     contentType: 'application/json',
                     async: true,
+                    data: JSON.stringify({}),
                     success: function (data) {
                         let auctions = JSON.parse(JSON.stringify(data));
-                        let row = false;
+                        let block = '<div class="card-deck" style="margin: 50px 0;>';
                         for (let i = 0; i < auctions.length; i++) {
-                            if (i % 3 === 0) {
-                                row = true;
-                            }
                             let auction = auctions[i];
-                            $("#auctions").append(auctionGenBlock(row, auction));
+                            block += auctionGenBlock(auction);
                         }
+                        block += '</div>';
+                        $("#auctions").append(block);
 
-                        function auctionGenBlock(row, auction) {
-                            let block = '';
-                            if (row) {
-                                block += '<div class="card-deck">'
-                            }
-
-                            block += '<div class="card">';
-                            block += '  <img class="card-img-top" src="'+ auction.item.medias[0].imageUrl + '" alt="Card image cap">';
+                        function auctionGenBlock(auction) {
+                            let block = '<div class="card">';
+                            block += '  <img class="card-img-top" src="' + auction.item.medias[0].imageUrl + '" alt="Card image cap">';
                             block += '  <div class="card-body">';
                             block += '      <h5 class="card-title">Auction of ' + auction.item.title + '</h5>';
-                            block += '      <p class="card-text">Auction status ' + auction.status + '</p>';
-                            block += '      <p class="card-text">Current price ' + auction.currentPrice + '</p>';
-                            block += '      <p class="card-text"><small class="text-muted">Last updated' + auction.updated + '</small></p>';
+                            block += '      <p class="card-text">Auction status: ' + auction.status + '</p>';
+                            block += '      <p class="card-text">Current price: ' + auction.currentPrice + ' $</p>';
+                            block += '      <p class="card-text"><small class="text-muted">Last updated: ' + auction.updated + '</small></p>';
+                            block += '      <p class="card-text"><a href="/bids/view/' + auction.id + '" class="btn btn-success">Put bid</a></p>';
                             block += '  </div>';
                             block += '</div>';
-
-                            if (row) {
-                                block += '</div>';
-                            }
 
                             return block;
                         }
@@ -72,8 +66,8 @@
                     let filterTo = $("#filter-to").val();
                     let filterPrice = $("#filter-price").val();
                     $.ajax({
-                        type: "GET",
-                        url: "/auctions",
+                        type: "POST",
+                        url: "/filter/auctions",
                         contentType: 'application/json',
                         async: true,
                         data: JSON.stringify({
@@ -86,35 +80,25 @@
                         }),
                         success: function (data) {
                             let auctions = JSON.parse(JSON.stringify(data));
-                            let row = false;
+                            let block = '<div class="card-deck" style="margin: 50px 0;>';
                             for (let i = 0; i < auctions.length; i++) {
-                                if (i % 3 === 0) {
-                                    row = true;
-                                }
                                 let auction = auctions[i];
-                                $("#auctions").append(auctionGenBlock(row, auction));
+                                block += auctionGenBlock(auction);
                             }
+                            block += '</div>';
+                            $("#auctions").append(block);
 
-                            function auctionGenBlock(row, auction) {
-                                let block = '';
-                                if (row) {
-                                    block += '<div class="card-deck">'
-                                }
-
-                                block += '<div class="card">';
-                                block += '  <img class="card-img-top" src="'+ auction.item.medias[0].imageUrl + '" alt="Card image cap">';
+                            function auctionGenBlock(auction) {
+                                let block = '<div class="card">';
+                                block += '  <img class="card-img-top" src="' + auction.item.medias[0].imageUrl + '" alt="Card image cap">';
                                 block += '  <div class="card-body">';
                                 block += '      <h5 class="card-title">Auction of ' + auction.item.title + '</h5>';
-                                block += '      <p class="card-text">Auction status ' + auction.status + '</p>';
-                                block += '      <p class="card-text">Current price ' + auction.currentPrice + '</p>';
-                                block += '      <p class="card-text"><small class="text-muted">Last updated' + auction.updated + '</small></p>';
-                                block += '      <a href="/bids/view/"' + auction.id + ' class="btn btn-success">Put bid</a>';
+                                block += '      <p class="card-text">Auction status: ' + auction.status + '</p>';
+                                block += '      <p class="card-text">Current price: ' + auction.currentPrice + ' $</p>';
+                                block += '      <p class="card-text"><small class="text-muted">Last updated: ' + auction.updated + '</small></p>';
+                                block += '      <p class="card-text"><a href="/bids/view/' + auction.id + '" class="btn btn-success">Put bid</a></p>';
                                 block += '  </div>';
                                 block += '</div>';
-
-                                if (row) {
-                                    block += '</div>';
-                                }
 
                                 return block;
                             }
@@ -128,28 +112,31 @@
         </script>
         <form id="filter">
             <div class="form-group">
-                <input id="filter-title" class="form-control" name="title" type="text" placeholder="Title of item">
+                <label for="filter-title">Title</label><input id="filter-title" class="form-control" name="title" type="text" placeholder="Title of item">
             </div>
             <div class="form-group">
-                <input id="filter-from" class="form-control" name="from" type="date" placeholder="From">
+                <label for="filter-from">Date from</label><input id="filter-from" class="form-control" name="from" type="date" placeholder="From">
             </div>
             <div class="form-group">
-                <input id="filter-to" class="form-control" name="to" type="date" placeholder="To">
+                <label for="filter-to">Date to</label><input id="filter-to" class="form-control" name="to" type="date" placeholder="To">
             </div>
             <div class="form-group">
-                <input id="filter-price" type="range" class="custom-range" name="price" min="0" max="1000000" step="1">
+                <label for="filter-price">Price range</label><input id="filter-price" type="range" class="custom-range" name="price" min="0" max="1000000" step="1">
             </div>
             <button id="searchAuctions" class="btn btn-primary" type="button">Search</button>
         </form>
         <div id="auctions"></div>
-        <form>
+        <form style="margin: 50px 0;">
             <div class="form-group">
                 <script>
                     $(document).ready(function () {
                         $.ajax({
-                            type: 'GET',
-                            url: "/items",
+                            type: 'POST',
+                            url: "/filter/items",
                             contentType: 'application/json',
+                            data: JSON.stringify({
+                                onlyMy: true
+                            }),
                             async: true,
                             success: function (data) {
                                 let items = JSON.parse(JSON.stringify(data));
@@ -169,22 +156,37 @@
                 </select>
             </div>
             <div class="form-group">
-                <input class="form-control" id="end" name="end" type="date"/>
+                <label for="end">Duration in minutes</label><select class="form-control" id="end">
+                    <option>5</option>
+                    <option>10</option>
+                    <option>15</option>
+                    <option>20</option>
+                    <option>25</option>
+                    <option>30</option>
+                    <option>35</option>
+                    <option>40</option>
+                    <option>45</option>
+                    <option>50</option>
+                    <option>55</option>
+                    <option>60</option>
+                </select>
             </div>
             <script>
                 $(document).ready(function () {
                     $("#putUp").click(function () {
                         let end = $("#end").val();
                         let item = $("#items").val();
+                        let timestamp = new Date(new Date().getTime() + end * 60000);
+
                         $.ajax({
                             type: "POST",
                             url: "/auctions",
                             contentType: 'application/json',
                             async: true,
                             data: JSON.stringify({
-                                "end": end,
+                                "end": timestamp,
                                 "item": {
-                                    "id": item.val(),
+                                    "id": item,
                                 }
                             }),
                             success: function () {

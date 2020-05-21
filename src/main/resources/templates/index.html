@@ -15,6 +15,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
             crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 </head>
 <body>
 <script>
@@ -45,17 +46,13 @@
         });
     });
 </script>
-<header th:include="fragments/headers.html :: headers"></header>
+<header th:replace="fragments/headers.html :: headers"></header>
 <main role="main">
     <section class="jumbotron text-center">
         <div class="container">
             <h1 class="jumbotron-heading">Items</h1>
             <p class="lead text-muted">Something short and leading about the collection below—its contents, the creator,
                 etc. Make it short and sweet, but not too short so folks don't simply skip over it entirely.</p>
-            <p>
-                <a href="#" class="btn btn-primary my-2">Main call to action</a>
-                <a href="#" class="btn btn-secondary my-2">Secondary action</a>
-            </p>
         </div>
     </section>
     <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
@@ -78,41 +75,42 @@
     <div class="album py-5 bg-light">
         <div class="container">
             <div class="row">
-                <div class="col-md-4">
-                    <div class="card mb-4 box-shadow">
-                        <img class="card-img-top"
-                             data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail"
-                             alt="Card image cap">
-                        <div class="card-body">
-                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
-                                additional content. This content is a little bit longer.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                                </div>
-                                <small class="text-muted">9 mins</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card mb-4 box-shadow">
-                        <img class="card-img-top"
-                             data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail"
-                             alt="Card image cap">
-                        <div class="card-body">
-                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
-                                additional content. This content is a little bit longer.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                                </div>
-                                <small class="text-muted">9 mins</small>
-                            </div>
-                        </div>
-                    </div>
+                <div class="col-md-12">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Suspendisse vel iaculis augue. Sed non dictum odio, eu commodo turpis.
+                    I n a accumsan libero. Pellentesque habitant morbi tristique senectus
+                    et netus et malesuada fames ac turpis egestas. Sed consequat tincidunt
+                    lacus, nec commodo tellus pulvinar eget. Nulla id rhoncus odio, in ornare tellus.
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Curabitur dapibus ante non nisi sollicitudin pretium.
+                    In hac habitasse platea dictumst.
+                    Cras neque velit, pulvinar eget ligula vel, faucibus finibus justo.
+                    Curabitur ut laoreet ex. Praesent viverra auctor dui, sed dictum tellus pulvinar sed.
+                    Phasellus sed lorem egestas nisi pellentesque efficitur at ac est.
+                    Suspendisse vulputate leo eget elit scelerisque tincidunt.
+                    Sed nunc neque, facilisis vitae ex eget, mattis vehicula ligula.
+                    Nulla iaculis dui vel magna auctor, quis vulputate magna molestie.
+                    Sed vitae ipsum quis justo consectetur volutpat vel sed enim.
+                    Aliquam in velit elit. Aliquam pharetra velit ex, ac laoreet enim pellentesque a.
+                    Sed ultricies eleifend volutpat. Nam quis sodales purus.
+                    In hac habitasse platea dictumst. Proin facilisis quam luctus dolor gravida,
+                    sit amet commodo velit vestibulum. Maecenas ultricies molestie molestie.
+                    Integer volutpat nec dui et viverra. In non vulputate eros.
+                    Morbi ac venenatis massa, a ullamcorper ligula.
+                    Integer quam odio, viverra et felis ac, laoreet sollicitudin leo.
+                    Vestibulum sit amet orci pulvinar, pulvinar purus ac, aliquam urna.
+                    Sed sit amet justo mattis nulla egestas commodo. Phasellus ornare elit vel cursus gravida.
+                    Praesent sodales lobortis urna. Nam iaculis ullamcorper lacus, sit amet
+                    iaculis velit lobortis vitae. Integer convallis eros eget nisi vehicula venenatis.
+                    Suspendisse potenti. In sed tempus sem. Nulla at luctus nisl. Pellentesque quam ex,
+                    ullamcorper sed erat quis, dictum accumsan massa. Donec ut ex arcu.
+                    Integer eu urna quis tortor posuere luctus malesuada a lectus. Mauris ipsum diam,
+                    vehicula nec egestas vel, tempus vitae nulla.
+                    Pellentesque aliquam ipsum eu dignissim luctus. Nulla sodales vehicula viverra.
+                    Aenean id ipsum sit amet libero facilisis faucibus. Nunc placerat augue nisi,
+                    sed luctus mi porta eget. Maecenas a egestas massa. Vivamus blandit ligula at leo vulputate,
+                    et fermentum nulla volutpat. Nullam quis laoreet odio.
+                    Sed semper aliquam ex sed fringilla. Morbi lobortis tristique libero eget rhoncus.
                 </div>
             </div>
         </div>

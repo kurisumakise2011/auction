@@ -1,6 +1,7 @@
 package com.auction.game.controller;
 
 import com.auction.game.converter.BidConverter;
+import com.auction.game.model.Bid;
 import com.auction.game.service.BidService;
 import com.auction.game.web.BidDto;
 import com.auction.game.web.BidFilter;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,10 +35,11 @@ public class BidController {
 
     @PostMapping("/bids/{auctionId}")
     public BidDto createBid(@RequestBody BidDto bidDto, @PathVariable String auctionId) {
-        return bidConverter.toBidDto(bidService.createBid(bidConverter.toBidFromDto(bidDto), id(), auctionId));
+        Bid bid = bidConverter.toBidFromDto(bidDto);
+        return bidConverter.toBidDto(bidService.createBid(bid, id(), auctionId));
     }
 
-    @GetMapping("/bids")
+    @PostMapping("/filter/bids")
     public List<BidDto> getBids(@RequestBody BidFilter filter) {
         return bidService.getAllBids(filter, id()).stream().map(bid -> bidConverter.toBidDto(bid)).collect(Collectors.toList());
     }
@@ -47,7 +50,7 @@ public class BidController {
     }
 
     @PutMapping("/bids/{id}")
-    public BidDto updateBid(@RequestBody BidDto bidDto, @PathVariable String id) {
+    public BidDto updateBid(@Valid @RequestBody BidDto bidDto, @PathVariable String id) {
         return bidConverter.toBidDto(bidService.updateBid(bidConverter.toBidFromDto(bidDto), id()));
     }
 

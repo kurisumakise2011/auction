@@ -3,7 +3,7 @@ package com.auction.game.web;
 import com.auction.game.model.AuctionStatus;
 import lombok.Data;
 
-import java.math.BigDecimal;
+
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -16,5 +16,5 @@ public class AuctionDto {
     private AuctionStatus status;
     private ItemDto item;
     private List<BidDto> bids;
-    private BigDecimal currentPrice;
+    private Double currentPrice;
 }

@@ -28,7 +28,7 @@ public class AuctioneerEntity {
     private String id;
 
     @PrimaryKeyJoinColumn
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     private UserProfileEntity userProfile;
 
     @OneToMany(fetch = FetchType.LAZY)

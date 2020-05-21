@@ -1,6 +1,7 @@
 package com.auction.game.service;
 
 import com.auction.game.converter.UserProfileConverter;
+import com.auction.game.entity.AuctioneerEntity;
 import com.auction.game.entity.CredentialEntity;
 import com.auction.game.entity.UserProfileEntity;
 import com.auction.game.exception.UnknownUserException;
@@ -15,13 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.DigestUtils;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @Transactional
@@ -59,7 +60,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         String hash = encoder.encode(credentialEntity.getPassword());
         credentialEntity.setPassword(hash);
 
-        return userProfileConverter.toUserProfile(userProfileRepository.save(entity));
+        AuctioneerEntity auctioneerEntity = new AuctioneerEntity();
+        auctioneerEntity.setId(entity.getId());
+
+        entity.setAuctioneerEntity(auctioneerEntity);
+
+        UserProfileEntity save = userProfileRepository.save(entity);
+
+        return userProfileConverter.toUserProfile(save);
     }
 
     @Override
@@ -81,8 +89,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public List<UserProfile> users() {
+        return userProfileRepository.findAll()
+                .stream()
+                .map(user -> userProfileConverter.toUserProfile(user))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public String findIdByUsername(String username) {
         return userProfileRepository.findIdByUsername(username);
+    }
+
+    @Override
+    public void banUser(boolean banned, String settingsId) {
+        userProfileRepository.updateBanned(banned, settingsId);
     }
 
     @Override

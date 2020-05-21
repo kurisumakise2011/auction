@@ -17,4 +17,9 @@ public interface AuctionService {
 
     Auction getAuctionById(String id);
 
+    boolean owner(String id, String userId);
+
+    void abandonAuction(String auctionId);
+
+    List<Auction> auctions();
 }

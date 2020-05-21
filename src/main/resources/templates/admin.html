@@ -14,8 +14,176 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
             crossorigin="anonymous"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 </head>
 <body>
+<header th:include="fragments/headers.html :: headers"></header>
+<main role="main">
+    <div class="container">
+        <script>
+            $(document).ready(function() {
+                $("#butBan").click(function () {
+                    let id = $("#inBan").val();
 
+                    $.ajax({
+                        type: "GET",
+                        url: "/admin/users/" + id + "/ban",
+                        contentType: 'application/json',
+                        async: true,
+                        success: function () {
+                            alert('Banned')
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+                    });
+                });
+
+                $("#butUnban").click(function () {
+                    let id = $("#inUnban").val();
+                    $.ajax({
+                        type: "PUT",
+                        url: "/admin/users/" + id + "/unban",
+                        contentType: 'application/json',
+                        async: true,
+                        success: function () {
+                            alert('Unbanned')
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+                    });
+                });
+
+                $("#butAbandon").click(function () {
+                    let id = $("#inAbandon").val();
+                    $.ajax({
+                        type: "PUT",
+                        url: "/admin/auctions/" + id + "/abandon",
+                        contentType: 'application/json',
+                        async: true,
+                        success: function () {
+                            alert('Abandoned')
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+                    });
+                });
+
+                $.ajax({
+                    type: "GET",
+                    url: "/admin/users",
+                    contentType: 'application/json',
+                    async: true,
+                    success: function (data) {
+                        let auctions = JSON.stringify(data);
+                        let auctionsTable = $("#auctionsTable");
+
+                        for (let i = 0; i < auctions.length; i++) {
+                            let auction = auctions[i];
+                            let block = '<tr>' +
+                                '<th>' + auction.id + '</th>' +
+                                '<th>' + auction.status + '</th>' +
+                                '<th>' + auction.item.title + '</th>' +
+                                '<th>' + auction.started + '</th>' +
+                                '<th>' + auction.end + '</th>' +
+                                '<th>' + auction.updated + '</th>';
+                            if (auction.status !== 'ABANDONED') {
+                                block += '<th><button type="button" class="btn btn-danger">Abandon</button></th>';
+                            } else {
+                                block += '<th>Auction abandoned</th>';
+                            }
+                            block += '</tr>';
+                            auctionsTable.append(block);
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+
+                $.ajax({
+                    type: "GET",
+                    url: "/admin/users",
+                    contentType: 'application/json',
+                    async: true,
+                    success: function (data) {
+                        let users = JSON.stringify(data);
+                        let usersTable = $("#usersTable");
+
+                        for (let i = 0; i < users.length; i++) {
+                            let user = users[i];
+                            let block = '<tr>' +
+                                '<th>' + user.id + '</th>' +
+                                '<th>' + user.username + '</th>' +
+                                '<th>' + user.email + '</th>' +
+                                '<th>' + user.settings.registered + '</th>' +
+                                '<th>' + user.settings.banned + '</th>';
+                            block += '</tr>';
+                            usersTable.append(block);
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            });
+        </script>
+        <h3>Users</h3>
+        <table class="table table-dark" style="margin: 100px 0;">
+            <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Username</th>
+                <th scope="col">Email</th>
+                <th scope="col">Registered</th>
+                <th scope="col">Banned</th>
+            </tr>
+            </thead>
+            <tbody id="usersTable">
+            </tbody>
+        </table>
+        <form style="margin: 50px 0;">
+            <div class="form-group">
+                <input type="text" name="inBan" id="inBan" class="form-control">
+            </div>
+            <button type="button" id="butBan" class="btn btn-danger">Ban</button>
+        </form>
+
+        <form style="margin: 50px 0;">
+            <div class="form-group">
+                <input type="text" name="inUnban" id="inUnban" class="form-control">
+            </div>
+            <button type="button" id="butUnban" class="btn btn-danger">Unban</button>
+        </form>
+
+        <h3>Auctions</h3>
+        <table class="table table-dark" style="margin: 100px 0;">
+            <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Status</th>
+                <th scope="col">Title</th>
+                <th scope="col">Started</th>
+                <th scope="col">End</th>
+                <th scope="col">Updated</th>
+                <th scope="col">Abandon</th>
+            </tr>
+            </thead>
+            <tbody id="auctionsTable">
+            </tbody>
+        </table>
+
+        <form style="margin: 50px 0;">
+            <div class="form-group">
+                <input type="text" name="inAbandon" id="inAbandon" class="form-control">
+            </div>
+            <button type="button" id="butAbandon" class="btn btn-danger">Abandon</button>
+        </form>
+    </div>
+</main>
+<footer th:include="fragments/footer.html :: footer"></footer>
 </body>
 </html>

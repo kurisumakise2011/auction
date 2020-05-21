@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 
 import static com.auction.game.controller.ApplicationController.id;
 
-@RequestMapping(path = "/auctions")
 @RestController
 public class AuctionController {
     @Autowired
@@ -39,7 +38,7 @@ public class AuctionController {
                 auctionService.createAuction(auctionConverter.toAuctionFromDto(auction), id()));
     }
 
-    @GetMapping("/auctions")
+    @PostMapping("/filter/auctions")
     public List<AuctionDto> getAuctions(@RequestBody AuctionFilter filter) {
         return auctionService.getAllAuctions(filter, id()).stream().map(auction -> auctionConverter.toAuctionDto(auction)).collect(Collectors.toList());
     }
@@ -52,6 +51,11 @@ public class AuctionController {
     @DeleteMapping("/auctions/{id}")
     public AuctionDto deleteAuction(@PathVariable String id) {
         return auctionConverter.toAuctionDto(auctionService.deleteAuction(id, id()));
+    }
+
+    @GetMapping("/auctions/{id}/owner")
+    public Boolean isUserOwner(@PathVariable String id) {
+        return auctionService.owner(id, id());
     }
 
 }

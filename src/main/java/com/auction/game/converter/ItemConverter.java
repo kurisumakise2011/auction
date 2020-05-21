@@ -3,6 +3,7 @@ package com.auction.game.converter;
 import com.auction.game.entity.ItemEntity;
 import com.auction.game.model.Item;
 import com.auction.game.web.ItemDto;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +21,9 @@ public class ItemConverter {
         }
 
         Item item = new Item();
+        if (StringUtils.isNotBlank(itemDto.getId())) {
+            item.setId(itemDto.getId());
+        }
         item.setDescription(itemDto.getDescription());
         item.setHidden(itemDto.isHidden());
         item.setPrice(itemDto.getPrice());
@@ -60,6 +64,7 @@ public class ItemConverter {
         dto.setTitle(item.getTitle());
         dto.setId(item.getId());
         dto.setPublished(item.getPublished());
+        dto.setMedias(item.getMedias());
 
         return dto;
     }
@@ -72,7 +77,9 @@ public class ItemConverter {
         ItemEntity entity = new ItemEntity();
         entity.setDescription(item.getDescription());
         entity.setHidden(item.isHidden());
-        entity.setId(item.getId());
+        if (StringUtils.isNotBlank(item.getId())) {
+            entity.setId(item.getId());
+        }
         entity.setTitle(item.getTitle());
         entity.setPublished(item.getPublished());
         entity.setPrice(item.getPrice());

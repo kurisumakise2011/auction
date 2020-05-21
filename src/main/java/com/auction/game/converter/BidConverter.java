@@ -3,6 +3,7 @@ package com.auction.game.converter;
 import com.auction.game.entity.BidEntity;
 import com.auction.game.model.Bid;
 import com.auction.game.web.BidDto;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -49,6 +50,7 @@ public class BidConverter {
         bid.setOrder(entity.getOrder());
         bid.setWon(entity.getWon());
         bid.setPrice(entity.getPrice());
+        bid.setAuthor(entity.getAuctioneer().getUserProfile().getUsername());
 
         return bid;
     }
@@ -60,7 +62,9 @@ public class BidConverter {
 
         BidEntity entity = new BidEntity();
         entity.setPrice(bid.getPrice());
-        entity.setId(bid.getId());
+        if (StringUtils.isNotBlank(bid.getId())) {
+            entity.setId(bid.getId());
+        }
         entity.setCreated(bid.getCreated());
         entity.setOrder(bid.getOrder());
         entity.setWon(bid.isWon());

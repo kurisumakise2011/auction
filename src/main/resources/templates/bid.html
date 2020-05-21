@@ -16,11 +16,153 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
             crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 </head>
     <body>
         <header th:include="fragments/headers.html :: headers"></header>
         <main role="main">
+            <div class="container">
+                <script>
+                    $(document).ready(function () {
+                        let auctionId = $.cookie('auctionId');
+                        $.ajax({
+                            type: 'GET',
+                            url: "/auctions/" + auctionId +"/owner",
+                            async: true,
+                            success: function (data) {
+                                let bool = JSON.parse(JSON.stringify(data));
+                                if (bool) {
+                                    $.ajax({
+                                        type: 'GET',
+                                        url: "/bids/auctions/" + auctionId,
+                                        async: true,
+                                        success: function (data) {
+                                            let bids = JSON.parse(JSON.stringify(data));
+                                            for (let i = 0; i < bids.length; i++) {
+                                                let bid = bids[i];
+                                                let block = '<tr>';
+                                                block += '<td>' + bid.order + '</td>';
+                                                block += '<td>' + bid.author + '</td>';
+                                                block += '<td>' + bid.price + '</td>';
+                                                block += '<td>' + bid.created + '</td>';
+                                                block += '</tr>';
+                                                $("#bids").append(block);
+                                            }
+                                        },
+                                        error: function (err) {
+                                            console.log(err);
+                                        }
+                                    });
+                                    $("#bidTable").css('display', 'block');
+                                    $("#bidForm").css('display', 'none');
+                                } else {
+                                    $("#bidTable").css('display', 'none');
+                                    $("#bidForm").css('display', 'block');
+                                }
+                            },
+                            error: function (err) {
+                                console.log(err);
+                            }
+                        });
 
+                        $.ajax({
+                            type: 'GET',
+                            url: "/auctions/" + auctionId,
+                            contentType: 'application/json',
+                            async: true,
+                            success: function (data) {
+                                let auction = JSON.parse(JSON.stringify(data));
+                                let status = auction.status;
+
+                                if (status === 'FINISHED') {
+                                    $("#border").attr('class', 'card border-secondary mb-3');
+                                    $("#title").attr('class', 'card-header bg-transparent border-secondary');
+                                    $("#cardBody").attr('class', 'card-body text-secondary');
+                                    $("#cardFooter").attr('class', 'card-footer bg-transparent border-secondary');
+                                    $("#bidForm").css('display', 'none');
+                                }
+
+                                if (status === 'ABANDONED') {
+                                    $("#border").attr('class', 'card border-danger mb-3');
+                                    $("#title").attr('class', 'card-header bg-transparent border-danger');
+                                    $("#cardBody").attr('class', 'card-body text-danger');
+                                    $("#cardFooter").attr('class', 'card-footer bg-transparent border-danger');
+                                    $("#bidForm").css('display', 'none');
+                                }
+
+                                $("#media").attr("src", auction.item.medias[0].imageUrl);
+                                $("#title").text(auction.item.title);
+                                $("#description").text(auction.item.description);
+                                $("#price").text(auction.currentPrice + "$");
+                                $("#started").text(auction.started);
+                                $("#end").text(auction.end);
+                                $("#updated").text(auction.updated);
+                            },
+                            error: function (err) {
+                                console.log(err);
+                            }
+                        });
+                    });
+                </script>
+
+                <div id="auctionView" style="margin: 100px 0;">
+                    <div id="border" class="card border-success mb-3" style="max-width: 18rem;">
+                        <div id="title" class="card-header bg-transparent border-success"></div>
+                        <div id="cardBody" class="card-body text-success">
+                            <h5 id="price" class="card-title"></h5>
+                            <p id="description" class="card-text"></p>
+                            <p id="started" class="card-text"></p>
+                            <p id="end" class="card-text"></p>
+                            <p class="card-text"><small id="updated" class="text-muted"></small></p>
+                        </div>
+                        <div id="cardFooter" class="card-footer bg-transparent border-success">
+                            <script>
+                                $(document).ready(function() {
+                                    $("#raise").click(function () {
+                                        let auctionId = $.cookie('auctionId');
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "/bids/" + auctionId,
+                                            contentType: 'application/json',
+                                            async: true,
+                                            data: JSON.stringify({
+                                                price: $("#bid").val()
+                                            }),
+                                            success: function () {
+                                                alert('Bid raised');
+                                            },
+                                            error: function (err) {
+                                                alert(err.message);
+                                                console.log(err);
+                                            }
+                                        });
+                                    });
+                                });
+                            </script>
+                            <form id="bidForm">
+                                <div class="form-group">
+                                    <input id="bid" type="number" name="bid" class="form-control">
+                                </div>
+                                <button id="raise" class="btn btn-success">Raise bid</button>
+                            </form>
+                            <div id="bidTable">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">By</th>
+                                        <th scope="col">Price</th>
+                                        <th scope="col">Created</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="bids">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
         <footer th:include="fragments/footer.html :: footer"></footer>
     </body>

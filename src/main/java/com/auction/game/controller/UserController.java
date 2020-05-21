@@ -27,7 +27,9 @@ public class UserController {
         if (ANONYMOUS.equals(id)) {
             return UserProfile.ANON;
         }
-        return userService.getUserById(id);
+        UserProfile userById = userService.getUserById(id);
+        userById.setCredential(null);
+        return userById;
     }
 
     @PostMapping(path = "/registration")

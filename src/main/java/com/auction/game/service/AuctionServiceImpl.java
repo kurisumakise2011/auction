@@ -44,8 +44,15 @@ public class AuctionServiceImpl implements AuctionService {
 
         ItemEntity itemEntity = itemRepository.findById(userId, auction.getItem().getId());
 
-        AuctionEntity auctionEntity = auctionConverter.toAuctionEntity(auction);
+        if (itemEntity == null) {
+            throw new NotFoundSuchEntityException("No such item");
+        }
+
+        AuctionEntity auctionEntity = new AuctionEntity();
+
+        auctionEntity.setEnd(auction.getEnd());
         auctionEntity.setAuthor(auctioneer);
+        auctionEntity.setAuctionItemEntity(itemEntity);
         auctionEntity.setStatus(AuctionStatus.ACTIVE);
         auctionEntity.setAuctionItemEntity(itemEntity);
 
@@ -113,5 +120,20 @@ public class AuctionServiceImpl implements AuctionService {
             throw new NotFoundSuchEntityException("No such action " + id);
         }
         return auctionConverter.toAuctionFromEntity(one);
+    }
+
+    @Override
+    public boolean owner(String id, String userId) {
+        return auctionRepository.isUserOwner(id, userId);
+    }
+
+    @Override
+    public void abandonAuction(String auctionId) {
+        auctionRepository.abandonAuction(auctionId);
+    }
+
+    @Override
+    public List<Auction> auctions() {
+        return auctionRepository.findAll().stream().map(auction -> auctionConverter.toAuctionFromEntity(auction)).collect(Collectors.toList());
     }
 }

@@ -1,10 +1,14 @@
 package com.auction.game.model;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class UserDetailsAdapter implements UserDetails {
     private final UserProfile userProfile;
@@ -15,7 +19,17 @@ public class UserDetailsAdapter implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
+        UserRole role = Optional.ofNullable(userProfile)
+                .map(UserProfile::getSettings)
+                .map(ProfileSettings::getRole)
+                .orElse(null);
+        if (role == null) {
+            return Collections.emptyList();
+        }
+        return Arrays.stream(UserRole.values())
+                .filter(userRole -> userRole.ordinal() <= role.ordinal())
+                .map(userRole -> new SimpleGrantedAuthority(userRole.name()))
+                .collect(Collectors.toList());
     }
 
     @Override

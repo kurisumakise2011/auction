@@ -1,6 +1,7 @@
 package com.auction.game.controller;
 
 import com.auction.game.model.UserDetailsAdapter;
+import com.auction.game.model.UserRole;
 import com.auction.game.service.JwtTokenService;
 import com.auction.game.web.JwtRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -104,6 +106,21 @@ public class ApplicationController {
             return ANONYMOUS;
         }
         return ((UserDetailsAdapter)principal).id();
+    }
+
+    public boolean hasRole(UserRole role) {
+        Object principal = Optional.ofNullable(SecurityContextHolder.getContext())
+                .map(SecurityContext::getAuthentication)
+                .map(Authentication::getPrincipal)
+                .orElse(null);
+
+        if (principal instanceof UserDetailsAdapter) {
+            UserDetailsAdapter adapter = (UserDetailsAdapter) principal;
+
+            return adapter.getAuthorities().contains(new SimpleGrantedAuthority(role.name()));
+        }
+
+        return false;
     }
 }
 

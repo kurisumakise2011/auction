@@ -18,7 +18,6 @@ import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 @Transactional
@@ -41,6 +40,8 @@ public class ItemServiceImpl implements ItemService {
             throw new UnknownUserException("Unknown user");
         }
         entity.setHolder(userProfileEntity.getAuctioneerEntity());
+
+        entity.getMedias().forEach(itemMedia -> itemMedia.setItemEntity(entity));
         ItemEntity save = itemRepository.save(entity);
 
         return itemConverter.toItemFromEntity(save);
@@ -67,38 +68,36 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> getAllItems(ItemFilter filter, String userId) {
-        Stream<ItemEntity> items;
+        List<ItemEntity> items;
         if (filter.isOnlyMy()) {
-            if (StringUtils.isBlank(filter.getTitle())) {
-                items = itemRepository.findItemsByTitle(userId, filter.getTitle()).stream();
+            if (StringUtils.isNotBlank(filter.getTitle())) {
+                items = itemRepository.findItemsByTitle(userId, filter.getTitle());
             } else {
-                items = itemRepository.myItems(userId).stream();
+                items = itemRepository.myItems(userId);
             }
         } else {
             if (StringUtils.isBlank(filter.getTitle())) {
-                items = itemRepository.findItemsByTitle(filter.getTitle()).stream();
+                items = itemRepository.findItemsByTitle(filter.getTitle());
             } else {
-                items = itemRepository.findAll().stream();
+                items = itemRepository.findAll();
             }
         }
 
-        items.filter(item -> {
+        return items.stream().filter(item -> {
             Timestamp published = item.getPublished();
             if (filter.getFrom() != null) {
                 return published.after(filter.getFrom()) || filter.getFrom().equals(published);
             } else {
-                return false;
+                return true;
             }
         }).filter(item -> {
             Timestamp published = item.getPublished();
             if (filter.getTo() != null) {
                 return published.before(filter.getTo()) || filter.getTo().equals(published);
             } else {
-                return false;
+                return true;
             }
-        });
-
-        return items.map(entity -> itemConverter.toItemFromEntity(entity)).collect(Collectors.toList());
+        }).map(entity -> itemConverter.toItemFromEntity(entity)).collect(Collectors.toList());
     }
 
     @Override

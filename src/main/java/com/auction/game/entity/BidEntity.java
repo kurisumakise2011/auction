@@ -13,7 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
-import java.math.BigDecimal;
+
 import java.sql.Timestamp;
 import java.util.UUID;
 
@@ -36,7 +36,7 @@ public class BidEntity {
 
     @Column(nullable = false)
     @Digits(integer=20, fraction=10)
-    private BigDecimal price;
+    private Double price;
 
     @Column(nullable = false)
     private Boolean won;
@@ -45,7 +45,7 @@ public class BidEntity {
     @JoinColumn(name = "auction_id")
     private AuctionEntity auctionEntity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "auctioneer_id")
     private AuctioneerEntity auctioneer;
 }
