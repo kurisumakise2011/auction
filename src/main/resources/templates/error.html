@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Error</title>
     <link type="text/css" rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -13,14 +14,14 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
             crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-6" style="text-align: center;">
-                <h4>Error occurred, we are trying to resolve it already</h4>
-            </div>
-            <img th:src="@{/img/error.jpg}" alt="Error image"/>
+    <div class="d-flex justify-content-center align-items-center" id="main">
+        <h1 class="mr-3 pr-3 align-top border-right inline-block align-content-center" th:text="${error.status}"></h1>
+        <div class="inline-block align-middle">
+            <h2 class="font-weight-normal lead" id="desc" th:text="${error.title} + '.' + ${error.message} + ' ' + ${error.requestURI}"></h2>
+            <a class="font-weight-normal lead" id="uri" href="http://localhost:8080">Return to site</a>
         </div>
     </div>
 </body>

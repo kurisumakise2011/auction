@@ -1,5 +1,6 @@
 package com.auction.game.controller;
 
+import com.auction.game.model.ErrorModel;
 import com.auction.game.model.UserDetailsAdapter;
 import com.auction.game.model.UserRole;
 import com.auction.game.service.JwtTokenService;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
