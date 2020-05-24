@@ -1,6 +1,9 @@
 package com.auction.game.controller;
 
+import com.auction.game.exception.NotFoundSuchEntityException;
+import com.auction.game.exception.UnknownUserException;
 import com.auction.game.exception.UnprocessableEntityException;
+import com.auction.game.service.UserAlreadyRegisteredException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,20 @@ public class ErrorControllerAdvice extends ResponseEntityExceptionHandler {
             RuntimeException ex, WebRequest request) {
         return handleExceptionInternal(ex, ex.getMessage(),
                 new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY, request);
+    }
+
+    @ExceptionHandler(value = {UnknownUserException.class, NotFoundSuchEntityException.class})
+    public ResponseEntity<Object> handleNotFoundEntityException(
+            RuntimeException ex, WebRequest request) {
+        return handleExceptionInternal(ex, ex.getMessage(),
+                new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
+
+    @ExceptionHandler(value = {UserAlreadyRegisteredException.class})
+    public ResponseEntity<Object> handleConflictEntityException(
+            RuntimeException ex, WebRequest request) {
+        return handleExceptionInternal(ex, ex.getMessage(),
+                new HttpHeaders(), HttpStatus.CONFLICT, request);
     }
 
 }

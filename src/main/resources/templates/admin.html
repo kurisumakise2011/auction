@@ -26,6 +26,10 @@
                 $("#butBan").click(function () {
                     let id = $("#inBan").val();
 
+                    if (id === '' || undefined || null) {
+                        return;
+                    }
+
                     $.ajax({
                         type: "PUT",
                         url: "/admin/users/" + id + "/ban",
@@ -33,16 +37,22 @@
                         async: true,
                         success: function () {
                             alert('Banned');
-                            window.location.replace('http://localhost:8080/admin');
+                            window.location.href = '/admin';
                         },
                         error: function (err) {
                             console.log(err);
+                            alert(err.responseText);
                         }
                     });
                 });
 
                 $("#butUnban").click(function () {
                     let id = $("#inUnban").val();
+
+                    if (id === '' || undefined || null) {
+                        return;
+                    }
+
                     $.ajax({
                         type: "PUT",
                         url: "/admin/users/" + id + "/unban",
@@ -50,16 +60,21 @@
                         async: true,
                         success: function () {
                             alert('Unbanned');
-                            window.location.replace('http://localhost:8080/admin');
+                            window.location.href = '/admin';
                         },
                         error: function (err) {
                             console.log(err);
+                            alert(err.responseText);
                         }
                     });
                 });
 
                 $("#butAbandon").click(function () {
                     let id = $("#inAbandon").val();
+                    if (id === '' || undefined || null) {
+                        return;
+                    }
+
                     $.ajax({
                         type: "PUT",
                         url: "/admin/auctions/" + id + "/abandon",
@@ -67,10 +82,11 @@
                         async: true,
                         success: function () {
                             alert('Abandoned');
-                            window.location.replace('http://localhost:8080/admin');
+                            window.location.href = '/admin';
                         },
                         error: function (err) {
                             console.log(err);
+                            alert(err.responseText);
                         }
                     });
                 });
@@ -99,6 +115,7 @@
                     },
                     error: function (err) {
                         console.log(err);
+                        alert(err.responseText);
                     }
                 });
 
@@ -125,6 +142,7 @@
                     },
                     error: function (err) {
                         console.log(err);
+                        alert(err.responseText);
                     }
                 });
             });

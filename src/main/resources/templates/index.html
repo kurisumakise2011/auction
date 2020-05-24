@@ -4,6 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Main</title>
+    <style>
+        .card-img-top {
+            width: 100%;
+            height: 30vw;
+            object-fit: cover;
+        }
+    </style>
     <link type="text/css" rel="stylesheet" th:href="@{/css/styles.css}">
     <link type="text/css" rel="stylesheet" th:href="@{/css/album.css}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -36,7 +43,7 @@
                         itemClass = "carousel-item";
                     }
                     sliders.append("<div class='" + itemClass + "'>" +
-                        "<img class=\"d-block w-100\" width='100' height='500' src='" + images[i].imageUrl + "' alt='Slider'>" +
+                        "<img height='500px' width='100%' src='" + images[i].imageUrl + "' alt='Slider'>" +
                     "</div>");
                 }
             },
@@ -73,45 +80,45 @@
         </a>
     </div>
     <div class="album py-5 bg-light">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Suspendisse vel iaculis augue. Sed non dictum odio, eu commodo turpis.
-                    I n a accumsan libero. Pellentesque habitant morbi tristique senectus
-                    et netus et malesuada fames ac turpis egestas. Sed consequat tincidunt
-                    lacus, nec commodo tellus pulvinar eget. Nulla id rhoncus odio, in ornare tellus.
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Curabitur dapibus ante non nisi sollicitudin pretium.
-                    In hac habitasse platea dictumst.
-                    Cras neque velit, pulvinar eget ligula vel, faucibus finibus justo.
-                    Curabitur ut laoreet ex. Praesent viverra auctor dui, sed dictum tellus pulvinar sed.
-                    Phasellus sed lorem egestas nisi pellentesque efficitur at ac est.
-                    Suspendisse vulputate leo eget elit scelerisque tincidunt.
-                    Sed nunc neque, facilisis vitae ex eget, mattis vehicula ligula.
-                    Nulla iaculis dui vel magna auctor, quis vulputate magna molestie.
-                    Sed vitae ipsum quis justo consectetur volutpat vel sed enim.
-                    Aliquam in velit elit. Aliquam pharetra velit ex, ac laoreet enim pellentesque a.
-                    Sed ultricies eleifend volutpat. Nam quis sodales purus.
-                    In hac habitasse platea dictumst. Proin facilisis quam luctus dolor gravida,
-                    sit amet commodo velit vestibulum. Maecenas ultricies molestie molestie.
-                    Integer volutpat nec dui et viverra. In non vulputate eros.
-                    Morbi ac venenatis massa, a ullamcorper ligula.
-                    Integer quam odio, viverra et felis ac, laoreet sollicitudin leo.
-                    Vestibulum sit amet orci pulvinar, pulvinar purus ac, aliquam urna.
-                    Sed sit amet justo mattis nulla egestas commodo. Phasellus ornare elit vel cursus gravida.
-                    Praesent sodales lobortis urna. Nam iaculis ullamcorper lacus, sit amet
-                    iaculis velit lobortis vitae. Integer convallis eros eget nisi vehicula venenatis.
-                    Suspendisse potenti. In sed tempus sem. Nulla at luctus nisl. Pellentesque quam ex,
-                    ullamcorper sed erat quis, dictum accumsan massa. Donec ut ex arcu.
-                    Integer eu urna quis tortor posuere luctus malesuada a lectus. Mauris ipsum diam,
-                    vehicula nec egestas vel, tempus vitae nulla.
-                    Pellentesque aliquam ipsum eu dignissim luctus. Nulla sodales vehicula viverra.
-                    Aenean id ipsum sit amet libero facilisis faucibus. Nunc placerat augue nisi,
-                    sed luctus mi porta eget. Maecenas a egestas massa. Vivamus blandit ligula at leo vulputate,
-                    et fermentum nulla volutpat. Nullam quis laoreet odio.
-                    Sed semper aliquam ex sed fringilla. Morbi lobortis tristique libero eget rhoncus.
-                </div>
+        <div class="container" style="padding: 10px;">
+            <script>
+                $(document).ready(function () {
+                    $.ajax({
+                        type: 'GET',
+                        url: "/items/limit/9",
+                        async: true,
+                        success: function (data) {
+                            let items = JSON.parse(JSON.stringify(data));
+                            let itemsEl = $("#items");
+                            let block = '';
+                            for (let i = 0; i < items.length; i++) {
+                                let item = items[i];
+                                block += genItemBlock(item);
+                            }
+                            itemsEl.append(block);
+
+                            function genItemBlock(item) {
+                                return '<div class="col-sm-4"><div class="card">'
+                                    + '<img class="card-img-top" src="' + (item.medias.length === 0 ? "" : item.medias[0].imageUrl) + '" alt="Generic placeholder image"/>'
+                                    + '<div class="card-body">'
+                                    + '<h5 class="card-title"><b>Title:</b> ' + item.title + '</h5>'
+                                    + '<p class="card-text"><b>Description:</b> ' + item.description + '</p>'
+                                    + '</div>'
+                                    + '<ul class="list-group list-group-flush">'
+                                    + '<li class="list-group-item"><b>Price:</b> ' + item.price + ' $</li>'
+                                    + '</ul>'
+                                    + '<div class="card-body">'
+                                    + '<a id="viewItem" class="card-link" href="/items/view/' + item.id + '" role="button">View details</a>'
+                                    + '</div></div></div>';
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+                    })
+                });
+            </script>
+            <div class="row" id="items">
             </div>
         </div>
     </div>

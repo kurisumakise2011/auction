@@ -32,6 +32,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.Optional;
 
 import static com.auction.game.web.JwtRequestFilter.TOKEN;
@@ -54,7 +55,7 @@ public class ApplicationController {
     private JwtTokenService jwtTokenService;
 
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
-    public String createAuthenticationToken(@ModelAttribute JwtRequest request, ModelMap model, HttpServletResponse response) {
+    public String createAuthenticationToken(@Valid @ModelAttribute JwtRequest request, ModelMap model, HttpServletResponse response) {
         String errors = authenticate(request.getUsername(), request.getPassword());
         if (StringUtils.EMPTY.equals(errors)) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());

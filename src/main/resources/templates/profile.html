@@ -16,7 +16,8 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
             crossorigin="anonymous"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 </head>
 <body>
 <header th:replace="fragments/headers.html :: headers"></header>
@@ -30,12 +31,14 @@
                 async: true,
                 success: function (data) {
                     let user = JSON.parse(JSON.stringify(data));
-                    $("#id").text("ID: " + user.id);
-                    $("#username").text("Username: " + user.username);
-                    $("#email").text("Email: " + user.email);
-                    $("#registered").text("Registered date: " + user.settings.registered);
+                    //$("#id").text("user.id");
+                    $("#username").text(user.username);
+                    $("#email").text(user.email);
+                    $("#desc").text(user.description);
+                    $("#registered").text(user.settings.registered);
                 },
                 error: function (err) {
+                    alert(err.responseText);
                     console.log(err)
                 }
             })
@@ -43,109 +46,159 @@
     </script>
     <div class="container">
         <div class="row">
-            <div class="col-sm">
-                <h4 id="id"></h4>
+            <div class="col-sm-1"></div>
+            <div class="col-sm-10">
+                <h4>My profile</h4>
+                <div class="card bg-light">
+                    <div class="card-header"><b>Email: </b><span id="email"></span></div>
+                    <div class="card-header"><b>Username: </b><span id="username"></span></div>
+                    <div class="card-body">
+                        <h5 class="card-title"><b>Description: </b></h5>
+                        <p class="card-text" id="desc"></p>
+                    </div>
+                    <div class="card-footer">
+                        <p class="card-text"><small id="registered" class="text-muted"></small></p>
+                    </div>
+                </div>
             </div>
-            <div class="col-sm">
-                <h4 id="username"></h4>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm">
-                <h4 id="email"></h4>
-            </div>
-            <div class="col-sm">
-                <h4 id="registered"></h4>
-            </div>
-        </div>
-        <div class="marketing">
-            <h3>My Items</h3>
-            <script>
-                $(document).ready(function () {
-                    $.ajax({
-                        type: 'POST',
-                        url: "/filter/items",
-                        contentType: 'application/json',
-                        data: JSON.stringify({
-                            onlyMy: true
-                        }),
-                        async: true,
-                        success: function (data) {
-                            let items = JSON.parse(JSON.stringify(data));
-                            let itemsEl = $("#items");
-                            let block = '<div class="row">';
-                            for (let i = 0; i < items.length; i++) {
-                                let item = items[i];
-                                block += genItemBlock(item);
-                            }
-                            block += '</div>';
-                            itemsEl.append(block);
+            <div class="col-sm-1"></div>
 
-                            function genItemBlock(item) {
-                                return '<div class="col-lg-4">'
-                                    + '<img class="rounded-circle" src="' + item.medias[0].imageUrl + '" alt="Generic placeholder image" width="140" height="140"'
-                                    + '<h2>' + item.title + '</h2>'
-                                    + '<p>' + item.description + '</p>'
-                                    + '<p>' + item.price + '</p>'
-                                    + ' <p><a id="viewItem" class="btn btn-secondary" href="/items/view/' + item.id + '" role="button">View details</a></p>'
-                                    + '</div>';
-                            }
-                        },
-                        error: function (err) {
-                            console.log(err);
+        </div>
+        <script>
+            $(document).ready(function () {
+                $.ajax({
+                    type: 'POST',
+                    url: "/filter/items",
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        onlyMy: true
+                    }),
+                    async: true,
+                    success: function (data) {
+                        let items = JSON.parse(JSON.stringify(data));
+                        let itemsEl = $("#items");
+
+                        if (items.length === 0) {
+                            itemsEl.append('<div class="pagination-centered">There are no items yet</div>');
+                            return;
                         }
-                    })
-                });
-            </script>
-            <div id="items">
+
+                        let block = '<div class="row">';
+                        for (let i = 0; i < items.length; i++) {
+                            let item = items[i];
+                            block += genItemBlock(item);
+                        }
+                        block += '</div>';
+                        itemsEl.append(block);
+
+                        function genItemBlock(item) {
+                            return '<div class="col-lg-4">'
+                                + '<img class="rounded-circle" src="' + item.medias[0].imageUrl + '" alt="Generic placeholder image" width="140" height="140"/>'
+                                + '<h2>' + item.title + '</h2>'
+                                + '<p>' + item.description + '</p><br>'
+                                + '<p>' + item.price + '</p><br>'
+                                + ' <p><a id="viewItem" class="btn btn-secondary" href="/items/view/' + item.id + '" role="button">View details</a></p>'
+                                + '</div>';
+                        }
+                    },
+                    error: function (err) {
+                        alert(err.responseText);
+                        console.log(err);
+                    }
+                })
+            });
+        </script>
+        <hr>
+        <div class="row">
+            <div class="col-sm-1"></div>
+            <div class="col-sm-10">
+                <h4>My Items</h4>
+                <div id="items">
+                </div>
             </div>
+            <div class="col-sm-1"></div>
         </div>
         <script>
             $(document).ready(function () {
                 $("#createItem").click(function () {
+                    let title = $("#title").val();
+                    let description = $("#description").val();
+                    let price = $("#price").val();
+                    let medias = $("#medias").val();
+
+                    if (title === '' || undefined || null) {
+                        $("#info").text("Fill title");
+                        return;
+                    }
+
+                    if (description === '' || undefined || null) {
+                        $("#info").text("Fill description");
+                        return;
+                    }
+
+                    if (price === '' || undefined || null) {
+                        $("#info").text("Fill price");
+                        return;
+                    }
+
+                    if (medias === '' || undefined || null) {
+                        $("#info").text("Fill url");
+                        return;
+                    }
+
                     $.ajax({
                         type: 'POST',
                         url: "/items",
                         contentType: 'application/json',
                         async: true,
                         data: JSON.stringify({
-                            title: $("#title").val(),
-                            description: $("#description").val(),
-                            price: $("#price").val(),
-                            medias: [{imageUrl: $("#medias").val(), category: 'MEDIA', mediaType: 'image/url'}],
+                            title: title,
+                            description: description,
+                            price: price,
+                            medias: [{imageUrl: medias, category: 'MEDIA', mediaType: 'image/url'}],
                             hidden: true,
                         }),
                         success: function () {
                             alert('Added');
-                            window.location.replace('http://localhost:8080/profile');
+                            window.location.href = '/profile';
                         },
                         error: function (err) {
-                            alert('Error occurred, see logs');
+                            alert(err.responseText);
                             console.log(err)
                         }
                     })
                 });
             });
         </script>
-        <form style="margin: 200px 0;">
-            <div class="form-group">
-                <label for="title">Title</label>
-                <input type="text" class="form-control" id="title" name="title" placeholder="Title of item">
+        <hr>
+        <div class="row">
+            <div class="col-sm-1"></div>
+            <div class="col-sm-10">
+                <h4>Create item</h4>
+                <form style="margin: 100px 0;">
+                    <div class="form-group" id="info"></div>
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input type="text" class="form-control" id="title" name="title" placeholder="Title of item">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea class="form-control" id="description" name="description"
+                                  placeholder="Description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Price</label>
+                        <input type="number" class="form-control" id="price" name="price" placeholder="Price">
+                    </div>
+                    <div class="form-group">
+                        <label for="medias">Image url</label>
+                        <input id="medias" type="text" class="form-control" name="medias" placeholder="Url to image">
+                    </div>
+                    <button id="createItem" type="button" class="btn btn-primary">Create</button>
+                </form>
             </div>
-            <div class="form-group">
-                <label for="description">Description</label>
-                <textarea class="form-control" id="description" name="description" placeholder="Description"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="price">Price</label>
-                <input type="number" class="form-control" id="price" name="price" placeholder="Price">
-            </div>
-            <div class="form-group">
-                <label for="medias">Image url</label>
-                <input id="medias" type="text" class="form-control" name="medias" placeholder="Url to image">
-            </div>
-            <button id="createItem" type="button" class="btn btn-primary">Create</button>
-        </form>
+            <div class="col-sm-1"></div>
+        </div>
     </div>
 </main>
 <footer th:include="fragments/footer.html :: footer"></footer>

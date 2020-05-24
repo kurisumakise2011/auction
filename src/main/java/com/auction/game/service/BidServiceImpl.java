@@ -57,7 +57,7 @@ public class BidServiceImpl implements BidService {
 
         BidEntity lastBid = getLastBid(auction);
         Double price = Optional.ofNullable(lastBid).map(BidEntity::getPrice).orElse(auction.getAuctionItemEntity().getPrice());
-        if (Double.compare(bid.getPrice(), price) < 0) {
+        if (Double.compare(bid.getPrice(), price) <= 0) {
             throw new UnprocessableEntityException("Bid cannot be lower than current bid price");
         }
 

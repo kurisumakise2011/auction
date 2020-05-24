@@ -23,6 +23,7 @@
             let password = $("#password").val();
             let email = $("#email").val();
             let username = $("#username").val();
+            let description = $("#description").val();
 
             if (username === '' || undefined || null) {
                 $("#info").text("Invalid username");
@@ -50,6 +51,7 @@
                         data: JSON.stringify({
                             "username": username,
                             "email": email,
+                            "description": description,
                             "credential": {
                                 "password" : password
                             }
@@ -57,8 +59,8 @@
                         success: function () {
                             $("#info").text("Registration successful, please login");
                         },
-                        error: function () {
-                            $("#info").text("Registration has failed, please try again");
+                        error: function (err) {
+                            $("#info").text("Registration has failed. " + err.responseText);
                         }
                     }
                 );
@@ -72,18 +74,26 @@
     <div class="container">
         <div id="info"></div>
         <h1 class="h3 mb-3 font-weight-normal">Please fill registration from fields</h1>
-        <label for="username" class="sr-only">Username</label>
-        <input id="username" name="username" class="form-control" placeholder="Login" required>
-
-        <label for="email" class="sr-only">Email address</label>
-        <input id="email" name="email" type="email" class="form-control" placeholder="Email address" required>
-
-        <label for="password" class="sr-only">Password</label>
-        <input type="password" id="password" class="form-control" placeholder="Password" required>
-
-        <label for="repassword" class="sr-only">Re-password</label>
-        <input id="repassword" type="password" class="form-control" placeholder="Enter password again" required>
-
+        <div class="form-group">
+            <label for="username" class="sr-only">Username</label>
+            <input id="username" name="username" class="form-control" placeholder="Login" required>
+        </div>
+        <div class="form-group">
+            <label for="email" class="sr-only">Email address</label>
+            <input id="email" name="email" type="email" class="form-control" placeholder="Email address" required>
+        </div>
+        <div class="form-group">
+            <label for="password" class="sr-only">Password</label>
+            <input type="password" id="password" class="form-control" placeholder="Password" required>
+        </div>
+        <div class="form-group">
+            <label for="repassword" class="sr-only">Re-password</label>
+            <input id="repassword" type="password" class="form-control" placeholder="Enter password again" required>
+        </div>
+        <div class="form-group">
+            <label for="description" class="sr-only">Re-password</label>
+            <textarea id="description" name="description" class="form-control" placeholder="Description" required></textarea>
+        </div>
         <button id="sign-up" class="btn btn-lg btn-primary btn-block" type="button">Sign up</button>
         <a class="btn btn-lg btn-primary btn-block" href="/login">Back to login</a>
     </div>

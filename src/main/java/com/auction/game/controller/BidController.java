@@ -34,7 +34,7 @@ public class BidController {
     }
 
     @PostMapping("/bids/{auctionId}")
-    public BidDto createBid(@RequestBody BidDto bidDto, @PathVariable String auctionId) {
+    public BidDto createBid(@Valid @RequestBody BidDto bidDto, @PathVariable String auctionId) {
         Bid bid = bidConverter.toBidFromDto(bidDto);
         return bidConverter.toBidDto(bidService.createBid(bid, id(), auctionId));
     }

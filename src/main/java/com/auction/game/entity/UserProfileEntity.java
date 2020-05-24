@@ -28,6 +28,9 @@ public class UserProfileEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column
+    private String description;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "profile_id", referencedColumnName = "id")
     private ProfileSettingsEntity settings;

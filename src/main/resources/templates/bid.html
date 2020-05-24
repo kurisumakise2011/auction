@@ -61,6 +61,7 @@
                                 }
                             },
                             error: function (err) {
+                                alert(err.responseText);
                                 console.log(err);
                             }
                         });
@@ -99,6 +100,7 @@
                                 $("#updated").text(auction.updated);
                             },
                             error: function (err) {
+                                alert(err.responseText);
                                 console.log(err);
                             }
                         });
@@ -119,6 +121,11 @@
                             <script>
                                 $(document).ready(function() {
                                     $("#raise").click(function () {
+                                        let price = $("#bid").val();
+                                        if (price === '' || undefined || null) {
+                                            alert('Fill price');
+                                            return;
+                                        }
                                         let auctionId = $.cookie('auctionId');
                                         $.ajax({
                                             type: "POST",
@@ -126,11 +133,11 @@
                                             contentType: 'application/json',
                                             async: true,
                                             data: JSON.stringify({
-                                                price: $("#bid").val()
+                                                price: price,
                                             }),
-                                            success: function () {
-                                                alert('Bid raised');
-                                                window.location.replace('http://localhost:8080/bid');
+                                            success: function (data) {
+                                                alert(data);
+                                                window.location.href = '/bid';
                                             },
                                             error: function (err) {
                                                 alert(err.responseText);
@@ -142,7 +149,7 @@
                             </script>
                             <form id="bidForm">
                                 <div class="form-group">
-                                    <input id="bid" type="number" name="bid" class="form-control">
+                                    <label for="bid">Amount: </label><input id="bid" type="number" name="bid" class="form-control">
                                 </div>
                                 <button id="raise" class="btn btn-success">Raise bid</button>
                             </form>

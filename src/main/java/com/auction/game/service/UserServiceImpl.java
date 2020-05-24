@@ -3,7 +3,6 @@ package com.auction.game.service;
 import com.auction.game.converter.UserProfileConverter;
 import com.auction.game.entity.AuctioneerEntity;
 import com.auction.game.entity.CredentialEntity;
-import com.auction.game.entity.ProfileSettingsEntity;
 import com.auction.game.entity.UserProfileEntity;
 import com.auction.game.exception.UnknownUserException;
 import com.auction.game.model.ProfileSettings;
@@ -51,6 +50,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UserProfile registration(UserProfile profile) {
+        if (userProfileRepository.existsByEmail(profile.getEmail())) {
+            throw new UserAlreadyRegisteredException("Such user already registered with that email");
+        }
+        if (userProfileRepository.existsByUsername(profile.getUsername())) {
+            throw new UserAlreadyRegisteredException("Such user already registered with that username");
+        }
+
+
         ProfileSettings settings = new ProfileSettings();
         settings.setBanned(false);
         settings.setRole(UserRole.REGISTERED);

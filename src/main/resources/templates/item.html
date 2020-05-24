@@ -15,7 +15,8 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
             crossorigin="anonymous"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 </head>
 <body>
 <header th:include="fragments/headers.html :: headers"></header>
@@ -34,11 +35,11 @@
                         success: function (data) {
                             let item = JSON.parse(JSON.stringify(data));
                             $("#media").attr("src", item.medias[0].imageUrl);
-                            $("#title").text('Title: ' + item.title);
-                            $("#description").text('Description: ' + item.description);
-                            $("#price").text('Price: ' + item.price + "$");
-                            $("#hidden").text('Hidden: ' + item.hidden);
-                            $("#published").text('Published time: ' + item.published);
+                            $("#title").html('<b>Title:</b> ' + item.title);
+                            $("#description").html('<b>Description:</b> ' + item.description);
+                            $("#price").html('<b>Price: </b>' + item.price + "$");
+                            $("#hidden").html('<b>Hidden: </b>' + item.hidden);
+                            $("#published").html('<b>Published time: </b>' + item.published);
                         },
                         error: function (err) {
                             console.log(err);
@@ -57,6 +58,30 @@
                         <p class="card-text"><small id="published" class="text-muted"></small></p>
                         <script>
                             $(document).ready(function () {
+                                let itemId = $.cookie('itemId');
+                                $.ajax({
+                                    type: 'GET',
+                                    url: "/items/" + itemId + "/owner",
+                                    async: true,
+                                    success: function (bool) {
+                                        if (bool) {
+                                            $("#removeItem").css('display', 'block');
+                                        }
+                                    },
+                                    error: function (err) {
+                                        alert(err.responseText);
+                                        console.log(err);
+                                    }
+                                });
+
+                                $("#backToItems").click(function () {
+                                    window.history.back();
+                                });
+
+                                $("#goToAuctions").click(function () {
+                                    window.location.href = '/auction'
+                                });
+
                                 $("#removeItem").click(function () {
                                     let enteredTitle = prompt('Enter item title to delete');
                                     if ('Title: ' + enteredTitle === $("#title").text()) {
@@ -67,9 +92,10 @@
                                             async: true,
                                             success: function () {
                                                 alert('Removed');
-                                                window.location.replace('http://localhost:8080/profile')
+                                                window.location.href = '/profile';
                                             },
                                             error: function (err) {
+                                                alert(err.responseText);
                                                 console.log(err);
                                             }
                                         });
@@ -79,13 +105,18 @@
                                 });
                             });
                         </script>
-                        <button id="removeItem" class="btn btn-danger">Remove</button>
+                        <div class="btn-toolbar">
+                            <div class="btn-group">
+                                <button id="backToItems" type="button" class="btn btn-success">Back</button>
+                                <button id="goToAuctions" type="button" class="btn btn-success">Go to auctions</button>
+                                <button id="removeItem" style="display: none;" class="btn btn-danger">Remove</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                <div class="col-sm-3"></div>
             </div>
-            <div class="col-sm-3"></div>
         </div>
-    </div>
 </main>
 <footer th:include="fragments/footer.html :: footer"></footer>
 </body>

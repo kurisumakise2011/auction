@@ -42,7 +42,7 @@
 
                             function auctionGenBlock(auction) {
                                 let block = '<div class="card">';
-                                block += '  <img class="card-img-top" src="' + auction.item.medias[0].imageUrl + '" alt="Card image cap">';
+                                block += '  <img class="card-img-top" src="' + auction.item.medias[0].imageUrl + '" alt="Card image cap"/>';
                                 block += '  <div class="card-body">';
                                 block += '      <h5 class="card-title">Auction of ' + auction.item.title + '</h5>';
                                 block += '      <p class="card-text">Auction status: ' + auction.status + '</p>';
@@ -56,6 +56,7 @@
                             }
                         },
                         error: function (err) {
+                            alert(err.responseText);
                             console.log(err)
                         }
                     });
@@ -67,6 +68,7 @@
                         let filterTo = $("#filter-to").val();
                         let filterPrice = $("#filter-price").val();
                         let status = $("#status").val();
+
                         $.ajax({
                             type: "POST",
                             url: "/filter/auctions",
@@ -94,7 +96,7 @@
 
                                 function auctionGenBlock(auction) {
                                     let block = '<div class="card">';
-                                    block += '  <img class="card-img-top" src="' + auction.item.medias[0].imageUrl + '" alt="Card image cap">';
+                                    block += '  <img class="card-img-top" src="' + auction.item.medias[0].imageUrl + '" alt="Card image cap"/>';
                                     block += '  <div class="card-body">';
                                     block += '      <h5 class="card-title">Auction of ' + auction.item.title + '</h5>';
                                     block += '      <p class="card-text">Auction status: ' + auction.status + '</p>';
@@ -108,6 +110,7 @@
                                 }
                             },
                             error: function (err) {
+                                alert(err.responseText);
                                 console.log(err)
                             }
                         });
@@ -153,17 +156,24 @@
                                 success: function (data) {
                                     let items = JSON.parse(JSON.stringify(data));
                                     let itemsEl = $("#items");
-                                    for (let i = 0; i < items.length; i++) {
-                                        let item = items[i];
-                                        itemsEl.append('<option value="' + item.id + '">' + item.title + '</option>');
+                                    if (items.length > 0) {
+                                        for (let i = 0; i < items.length; i++) {
+                                            let item = items[i];
+                                            itemsEl.append('<option value="' + item.id + '">' + item.title + '</option>');
+                                        }
+                                    } else {
+                                        itemsEl.append('<option value="">None</option>');
                                     }
+
                                 },
                                 error: function (err) {
+                                    alert(err.responseText);
                                     console.log(err);
                                 }
                             })
                         });
                     </script>
+                    <label for="items">Choose item which you want to put on an auction</label>
                     <select class="form-control" id="items">
                     </select>
                 </div>
@@ -188,6 +198,15 @@
                         $("#putUp").click(function () {
                             let end = $("#end").val();
                             let item = $("#items").val();
+                            if (end === '' || undefined || null) {
+                                alert('Enter end date');
+                                return;
+                            }
+
+                            if (item === '' || undefined || null) {
+                                alert('Choose item from list, if it is empty, add item firstly');
+                                return;
+                            }
                             let timestamp = new Date(new Date().getTime() + end * 60000);
 
                             $.ajax({
@@ -203,7 +222,7 @@
                                 }),
                                 success: function () {
                                     alert('Created');
-                                    window.location.replace('http://localhost:8080/auction');
+                                    window.location.href = '/auction';
                                 },
                                 error: function (err) {
                                     alert(err.responseText);

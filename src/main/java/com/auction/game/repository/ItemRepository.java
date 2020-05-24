@@ -5,11 +5,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<ItemEntity, String> {
 
     @Query("from ItemEntity i join i.holder h  where h.id = ?1 and i.id = ?2")
     ItemEntity findById(String userId, String id);
+
+    @Query("from ItemEntity i where i.id = ?1")
+    Optional<ItemEntity> findById(String id);
 
     @Query("from ItemEntity i join i.holder h where h.id = ?1")
     List<ItemEntity> myItems(String userId);
@@ -31,4 +35,10 @@ public interface ItemRepository extends JpaRepository<ItemEntity, String> {
 
     @Query("from ItemEntity i where i.title LIKE %?1% and i.description LIKE %?2%")
     List<ItemEntity> findItemsByTitleAndDescription(String title, String description);
+
+    @Query(value = "SELECT * FROM t_item ORDER BY RAND() LIMIT :limit", nativeQuery = true)
+    List<ItemEntity> findAllWithLimit(int limit);
+
+    @Query("select count(i) > 0 from ItemEntity i join i.holder h where i.id = ?1 and h.id = ?2")
+    boolean isUserOwner(String id, String userId);
 }

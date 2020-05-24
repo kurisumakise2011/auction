@@ -32,6 +32,8 @@ public class UserProfile {
     @Valid
     private ProfileSettings settings;
 
+    private String description;
+
     @Valid
     private Credential credential;
 }

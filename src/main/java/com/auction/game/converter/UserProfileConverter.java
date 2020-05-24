@@ -19,6 +19,7 @@ public class UserProfileConverter {
 
         profile.setEmail(entity.getEmail());
         profile.setId(entity.getId());
+        profile.setDescription(entity.getDescription());
         profile.setUsername(entity.getUsername());
 
         ProfileSettings settings = new ProfileSettings();
@@ -60,6 +61,7 @@ public class UserProfileConverter {
         entity.setSettings(settingsEntity);
         entity.setEmail(userProfile.getEmail());
         entity.setUsername(userProfile.getUsername());
+        entity.setDescription(userProfile.getDescription());
 
         return entity;
     }

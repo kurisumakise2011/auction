@@ -15,6 +15,12 @@ public interface ItemService {
 
     Item deleteItem(String id, String userId);
 
-    Item getItemById(String id, String userId);
+    Item getItemById(String id);
+
+    Item getItemById(String userId, String id);
+
+    List<Item> getAllItems(int limit);
+
+    boolean isOwnerOfItem(String userId, String id);
     
 }

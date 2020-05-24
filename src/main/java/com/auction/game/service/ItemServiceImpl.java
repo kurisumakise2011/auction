@@ -112,12 +112,34 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item getItemById(String id, String userId) {
+    public Item getItemById(String id) {
+        ItemEntity byId = itemRepository.findById(id).orElse(null);
+        if (byId == null) {
+            throw new NotFoundSuchEntityException("Item not found");
+        }
+        return itemConverter.toItemFromEntity(byId);
+    }
+
+    @Override
+    public Item getItemById(String userId, String id) {
         ItemEntity byId = itemRepository.findById(userId, id);
         if (byId == null) {
             throw new NotFoundSuchEntityException("Item not found");
         }
         return itemConverter.toItemFromEntity(byId);
+    }
+
+    @Override
+    public List<Item> getAllItems(int limit) {
+        return itemRepository.findAllWithLimit(limit)
+                .stream()
+                .map(item -> itemConverter.toItemFromEntity(item))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean isOwnerOfItem(String userId, String id) {
+        return itemRepository.isUserOwner(id, userId);
     }
 
 }
