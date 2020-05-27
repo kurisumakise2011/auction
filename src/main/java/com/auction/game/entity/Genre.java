@@ -21,5 +21,5 @@ public class Genre {
     private String id = UUID.randomUUID().toString();
 
     @Column
-    private String genres;
+    private String genre;
 }

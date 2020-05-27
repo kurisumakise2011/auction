@@ -32,49 +32,49 @@
     // });
 
     
-    function updateDictionaries(url, value, id) {
-        let ids = [];
-        let values = [];
-
-        $("input[name=id_" + id + "]").each(function () {
-            ids.push($(this).val());
-        });
-
-        $("input[name=" + value + "]").each(function () {
-            values.push($(this).val())
-        });
-
-        if (ids.length === values.length) {
-            let data = [];
-            for (let i = 0; i < ids.length; i++) {
-                data[i] = {
-                    id: ids[i],
-                };
-                data[i][value] = values[i];
-            }
-
-            $.ajax({
-                type: "PUT",
-                url: url,
-                contentType: 'application/json',
-                async: true,
-                data: JSON.stringify({
-                    list: data
-                }),
-                success: function (data, httpStatus, xhr) {
-                    if (httpStatus >= 400) {
-                        alert(data.responseText);
-                        return;
-                    }
-                    alert('Updated');
-                },
-                error: function (error) {
-                    console.log(err);
-                    alert(err.responseText);
-                }
-            });
-        } else {
-            alert('Amounts of category ids and values are not matched')
-        }
-    }
+    // function updateDictionaries(url, value, id) {
+    //     let ids = [];
+    //     let values = [];
+    //
+    //     $("input[name=id_" + id + "]").each(function () {
+    //         ids.push($(this).val());
+    //     });
+    //
+    //     $("input[name=" + value + "]").each(function () {
+    //         values.push($(this).val())
+    //     });
+    //
+    //     if (ids.length === values.length) {
+    //         let data = [];
+    //         for (let i = 0; i < ids.length; i++) {
+    //             data[i] = {
+    //                 id: ids[i],
+    //             };
+    //             data[i][value] = values[i];
+    //         }
+    //
+    //         $.ajax({
+    //             type: "PUT",
+    //             url: url,
+    //             contentType: 'application/json',
+    //             async: true,
+    //             data: JSON.stringify({
+    //                 list: data
+    //             }),
+    //             success: function (data, httpStatus, xhr) {
+    //                 if (httpStatus >= 400) {
+    //                     alert(data.responseText);
+    //                     return;
+    //                 }
+    //                 alert('Updated');
+    //             },
+    //             error: function (error) {
+    //                 console.log(err);
+    //                 alert(err.responseText);
+    //             }
+    //         });
+    //     } else {
+    //         alert('Amounts of category ids and values are not matched')
+    //     }
+    // }
 </script>

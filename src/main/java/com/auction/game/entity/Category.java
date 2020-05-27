@@ -21,5 +21,5 @@ public class Category {
     private String id = UUID.randomUUID().toString();
 
     @Column
-    private String categories;
+    private String category;
 }

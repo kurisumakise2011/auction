@@ -21,5 +21,5 @@ public class Material {
     private String id = UUID.randomUUID().toString();
 
     @Column
-    private String materials;
+    private String material;
 }
