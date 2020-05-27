@@ -12,5 +12,5 @@ public class AuctionFilter {
     private boolean active = true;
     private ItemFilter item;
     private AuctionRole role = AuctionRole.NONE;
-    private AuctionStatus status = AuctionStatus.ALL;
+    private AuctionStatus status = AuctionStatus.ACTIVE;
 }

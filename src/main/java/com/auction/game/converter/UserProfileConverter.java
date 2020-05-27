@@ -7,6 +7,8 @@ import com.auction.game.model.ProfileSettings;
 import com.auction.game.model.UserProfile;
 import org.springframework.stereotype.Component;
 
+import java.util.Base64;
+
 @Component
 public class UserProfileConverter {
 
@@ -41,11 +43,7 @@ public class UserProfileConverter {
     }
 
     public UserProfileEntity toEntity(UserProfile userProfile) {
-        if (userProfile == null) {
-            return null;
-        }
-
-        if (userProfile.getSettings() == null) {
+        if (userProfile == null || userProfile.getSettings() == null) {
             return null;
         }
 
@@ -62,6 +60,9 @@ public class UserProfileConverter {
         entity.setEmail(userProfile.getEmail());
         entity.setUsername(userProfile.getUsername());
         entity.setDescription(userProfile.getDescription());
+        if (userProfile.getImage() != null) {
+            entity.setImage(userProfile.getImage().getBytes());
+        }
 
         return entity;
     }

@@ -36,4 +36,8 @@ public class UserProfile {
 
     @Valid
     private Credential credential;
+
+    private boolean hasAvatar;
+
+    private String image;
 }

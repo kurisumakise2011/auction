@@ -42,6 +42,13 @@ public class ItemController {
         return itemService.getAllItems(limit).stream().map(item -> itemConverter.toItemDto(item)).collect(Collectors.toList());
     }
 
+    @PostMapping("/filter/items/{id}")
+    public List<ItemDto> getItems(@RequestBody ItemFilter filter, @PathVariable String id) {
+        return itemService.getAllItems(filter, id).stream()
+                .map(item -> itemConverter.toItemDto(item))
+                .collect(Collectors.toList());
+    }
+
     @PostMapping("/filter/items")
     public List<ItemDto> getItems(@RequestBody ItemFilter filter) {
         return itemService.getAllItems(filter, id()).stream()

@@ -24,24 +24,58 @@
 <main role="main" style="margin-top: 100px;">
     <script>
         $(document).ready(function () {
+            //let userId = /*[[${userId}]]*/ 'none';
             $.ajax({
                 type: 'GET',
                 url: "/users/who",
                 contentType: 'application/json',
                 async: true,
-                success: function (data) {
+                success: function (data, status, xhr) {
+                    if (xhr.status !== 200) {
+                        alert(data.responseText);
+                        return;
+                    }
+
                     let user = JSON.parse(JSON.stringify(data));
                     //$("#id").text("user.id");
                     $("#username").text(user.username);
                     $("#email").text(user.email);
-                    $("#desc").text(user.description);
-                    $("#registered").text(user.settings.registered);
+                    $("#desc").val(user.description);
+                    $("#registered").text(user.settings.registered.replace("T", " ").replace(".000+0000", ""));
+
+                    if (user.hasAvatar) {
+                        let url ='/users/avatar';
+                        $("#avatar").attr('src', url);
+                    }
                 },
                 error: function (err) {
                     alert(err.responseText);
                     console.log(err)
                 }
-            })
+            });
+
+            $("#updateDesc").click(function () {
+                $.ajax({
+                    type: 'PUT',
+                    url: "/users/description",
+                    contentType: 'application/json',
+                    async: true,
+                    data: JSON.stringify({
+                        description: $("#desc").val()
+                    }),
+                    success: function (data, status, xhr) {
+                        if (xhr.status !== 200) {
+                            alert(data.responseText);
+                        } else {
+                            alert(status)
+                        }
+                    },
+                    error: function (err) {
+                        alert(err.responseText);
+                        console.log(err)
+                    }
+                });
+            });
         });
     </script>
     <div class="container">
@@ -49,15 +83,17 @@
             <div class="col-sm-1"></div>
             <div class="col-sm-10">
                 <h4>My profile</h4>
+                <img id="avatar" height="122" width="122" th:src="@{/img/icon-avatar-default.png}" alt="Generic placeholder image"/>
                 <div class="card bg-light">
                     <div class="card-header"><b>Email: </b><span id="email"></span></div>
                     <div class="card-header"><b>Username: </b><span id="username"></span></div>
                     <div class="card-body">
                         <h5 class="card-title"><b>Description: </b></h5>
-                        <p class="card-text" id="desc"></p>
+                        <textarea class="form-control" id="desc"></textarea>
                     </div>
                     <div class="card-footer">
                         <p class="card-text"><small id="registered" class="text-muted"></small></p>
+                        <button type="button" id="updateDesc" class="btn btn-primary">Update</button>
                     </div>
                 </div>
             </div>
@@ -74,7 +110,12 @@
                         onlyMy: true
                     }),
                     async: true,
-                    success: function (data) {
+                    success: function (data, status, xhr) {
+                        if (xhr.status !== 200) {
+                            alert(data.responseText);
+                            return;
+                        }
+
                         let items = JSON.parse(JSON.stringify(data));
                         let itemsEl = $("#items");
 
@@ -93,7 +134,7 @@
 
                         function genItemBlock(item) {
                             return '<div class="col-lg-4">'
-                                + '<img class="rounded-circle" src="' + item.medias[0].imageUrl + '" alt="Generic placeholder image" width="140" height="140"/>'
+                                + '<img class="img-responsive" src="' + item.medias[0].imageUrl + '" alt="Generic placeholder image" width="140" height="140"/>'
                                 + '<h2>' + item.title + '</h2>'
                                 + '<p>' + item.description + '</p><br>'
                                 + '<p>' + item.price + '</p><br>'
@@ -118,6 +159,18 @@
             </div>
             <div class="col-sm-1"></div>
         </div>
+        <script th:replace="fragments/dictionaries.html :: dictionaries"></script>
+        <script>
+            $(document).ready(function () {
+                let fun = function (e, id, valueName) {
+                    return '<li><label class="form-check-label"><input class="form-check-input" type="checkbox" value="'+ e[valueName] +'" name="' + id + '" id="' + e.id + '"/>' + e[valueName] + '</label></li>';
+                };
+
+                getDictionaries('/dictionary/category', 'categories', 'category', fun);
+                getDictionaries('/dictionary/genre', 'genres', 'genre', fun);
+                getDictionaries('/dictionary/material', 'materials', 'material', fun);
+            });
+        </script>
         <script>
             $(document).ready(function () {
                 $("#createItem").click(function () {
@@ -126,25 +179,65 @@
                     let price = $("#price").val();
                     let medias = $("#medias").val();
 
+                    let categories = [];
+                    let materials = [];
+                    let genres = [];
+
+                    $("input[name=categories]").each(function () {
+                        if ($(this).is(":checked")) {
+                            categories.push($(this).val())
+                        }
+                    });
+
+                    $("input[name=materials]").each(function () {
+                        if ($(this).is(":checked")) {
+                            materials.push($(this).val())
+                        }
+                    });
+
+                    $("input[name=genres]").each(function () {
+                        if ($(this).is(":checked")) {
+                            genres.push($(this).val())
+                        }
+                    });
+
                     if (title === '' || undefined || null) {
-                        $("#info").text("Fill title");
+                        alert("Fill title");
                         return;
                     }
 
                     if (description === '' || undefined || null) {
-                        $("#info").text("Fill description");
+                        alert("Fill description");
                         return;
                     }
 
                     if (price === '' || undefined || null) {
-                        $("#info").text("Fill price");
+                        alert("Fill price");
                         return;
                     }
 
                     if (medias === '' || undefined || null) {
-                        $("#info").text("Fill url");
+                        alert("Fill url");
                         return;
                     }
+
+                    if (categories.length === 0) {
+                        alert("Choose any category");
+                        return;
+                    }
+
+
+                    if (materials.length === 0) {
+                        alert("Choose any material");
+                        return;
+                    }
+
+
+                    if (genres.length === 0) {
+                        alert("Choose any genre");
+                        return;
+                    }
+
 
                     $.ajax({
                         type: 'POST',
@@ -157,10 +250,17 @@
                             price: price,
                             medias: [{imageUrl: medias, category: 'MEDIA', mediaType: 'image/url'}],
                             hidden: true,
+                            category: categories,
+                            material: materials,
+                            genre: genres,
                         }),
-                        success: function () {
-                            alert('Added');
-                            window.location.href = '/profile';
+                        success: function (result, status, xhr) {
+                            if (xhr.status === 200) {
+                                alert('Added');
+                                window.location.href = '/profile';
+                            } else {
+                                alert(result);
+                            }
                         },
                         error: function (err) {
                             alert(err.responseText);
@@ -194,6 +294,37 @@
                         <label for="medias">Image url</label>
                         <input id="medias" type="text" class="form-control" name="medias" placeholder="Url to image">
                     </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-light" data-toggle="collapse"
+                                data-target="#categoriesSpoiler" role="button"
+                                aria-expanded="false" aria-controls="categoriesSpoiler">Categories
+                        </button>
+                        <div class="collapse" id="categoriesSpoiler">
+                            <ul id="categories">
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-light" data-toggle="collapse"
+                                data-target="#genresSpoiler" role="button"
+                                aria-expanded="false" aria-controls="genresSpoiler">Genres
+                        </button>
+                        <div class="collapse" id="genresSpoiler">
+                            <ul id="genres">
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-light" data-toggle="collapse"
+                                data-target="#materialsSpoiler" role="button"
+                                aria-expanded="false" aria-controls="materialsSpoiler">Materials
+                        </button>
+                        <div class="collapse" id="materialsSpoiler">
+                            <ul id="materials">
+                            </ul>
+                        </div>
+                    </div>
+
                     <button id="createItem" type="button" class="btn btn-primary">Create</button>
                 </form>
             </div>

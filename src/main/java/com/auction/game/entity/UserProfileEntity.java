@@ -31,6 +31,9 @@ public class UserProfileEntity {
     @Column
     private String description;
 
+    @Column
+    private byte[] image;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "profile_id", referencedColumnName = "id")
     private ProfileSettingsEntity settings;

@@ -84,11 +84,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UserProfile getUserById(String userId) {
-        Optional<UserProfileEntity> byId = userProfileRepository.findById(userId);
-        if (byId.isEmpty()) {
+        UserProfileEntity byId = userProfileRepository.findById(userId).orElse(null);
+        if (byId == null) {
             throw new UnknownUserException("No such user with id " + userId);
         }
-        return userProfileConverter.toUserProfile(byId.get());
+        UserProfile profile = userProfileConverter.toUserProfile(byId);
+        profile.setHasAvatar(byId.getImage() != null);
+        profile.setCredential(null);
+        return profile;
     }
 
     @Override
@@ -121,6 +124,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
         entity.getSettings().setBanned(banned);
         userProfileRepository.save(entity);
+    }
+
+    @Override
+    public void updateDescription(String description, String id) {
+        userProfileRepository.updateDescription(description, id);
+    }
+
+    @Override
+    public void updateImage(String id, byte[] image) {
+        userProfileRepository.updateImage(image, id);
+    }
+
+    @Override
+    public byte[] getImage(String userId) {
+        return userProfileRepository.getImageById(userId);
     }
 
     @Override

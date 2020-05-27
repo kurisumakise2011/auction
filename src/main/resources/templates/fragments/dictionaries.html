@@ -1,0 +1,80 @@
+<script xmlns:th="http://www.thymeleaf.org" th:fragment="dictionaries">
+    function getDictionaries(url, id, valueName, fun) {
+        $.ajax({
+            type: "GET",
+            url: url,
+            contentType: 'application/json',
+            async: true,
+            success: function (data, status, xhr) {
+                if (xhr.status >= 400) {
+                    alert(data.responseText);
+                    return;
+                }
+                data = JSON.parse(JSON.stringify(data));
+                let ul = $("#" + id);
+                let el = '';
+                for (let i = 0; i < data.length; i++) {
+                    let e = data[i];
+                    el += fun(e, id, valueName);
+                }
+                ul.append(el);
+            },
+            error: function (err) {
+                alert(err.responseText);
+                console.log(err);
+            }
+        });
+    }
+
+
+    // $("#" + id).click(function () {
+    //     $(this).remove();
+    // });
+
+    
+    function updateDictionaries(url, value, id) {
+        let ids = [];
+        let values = [];
+
+        $("input[name=id_" + id + "]").each(function () {
+            ids.push($(this).val());
+        });
+
+        $("input[name=" + value + "]").each(function () {
+            values.push($(this).val())
+        });
+
+        if (ids.length === values.length) {
+            let data = [];
+            for (let i = 0; i < ids.length; i++) {
+                data[i] = {
+                    id: ids[i],
+                };
+                data[i][value] = values[i];
+            }
+
+            $.ajax({
+                type: "PUT",
+                url: url,
+                contentType: 'application/json',
+                async: true,
+                data: JSON.stringify({
+                    list: data
+                }),
+                success: function (data, httpStatus, xhr) {
+                    if (httpStatus >= 400) {
+                        alert(data.responseText);
+                        return;
+                    }
+                    alert('Updated');
+                },
+                error: function (error) {
+                    console.log(err);
+                    alert(err.responseText);
+                }
+            });
+        } else {
+            alert('Amounts of category ids and values are not matched')
+        }
+    }
+</script>

@@ -1,6 +1,5 @@
 package com.auction.game.controller;
 
-import com.auction.game.model.ErrorModel;
 import com.auction.game.model.UserDetailsAdapter;
 import com.auction.game.model.UserRole;
 import com.auction.game.service.JwtTokenService;
@@ -20,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -85,6 +84,12 @@ public class ApplicationController {
     public String viewAuction(@PathVariable String id, HttpServletResponse response) {
         response.addCookie(new Cookie(AUCTION_ID, id));
         return "bid";
+    }
+
+    @GetMapping("/profile/{id}")
+    public String viewProfile(@PathVariable String id, Model model) {
+        model.addAttribute("userId", id);
+        return "author";
     }
 
     private String authenticate(String username, String password) {

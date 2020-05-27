@@ -10,13 +10,18 @@ import com.auction.game.model.Item;
 import com.auction.game.repository.ItemRepository;
 import com.auction.game.repository.UserProfileRepository;
 import com.auction.game.web.ItemFilter;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -98,12 +103,42 @@ public class ItemServiceImpl implements ItemService {
             } else {
                 return true;
             }
-        }).map(entity -> itemConverter.toItemFromEntity(entity)).collect(Collectors.toList());
+        }).filter(entity -> {
+             if (CollectionUtils.isNotEmpty(filter.getCategories())) {
+                 return CollectionUtils.containsAny(filter.getCategories(),
+                         Optional.ofNullable(entity.getCategory())
+                                 .map(s -> Arrays.asList(s.split(",")))
+                                 .orElse(Collections.emptyList()));
+             }
+             return true;
+        }).filter(entity -> {
+            if (CollectionUtils.isNotEmpty(filter.getGenres())) {
+                return CollectionUtils.containsAny(filter.getGenres(),
+                        Optional.ofNullable(entity.getGenre())
+                                .map(s -> Arrays.asList(s.split(",")))
+                                .orElse(Collections.emptyList()));
+            }
+            return true;
+        }).filter(entity -> {
+            if (CollectionUtils.isNotEmpty(filter.getMaterials())) {
+                return CollectionUtils.containsAny(filter.getMaterials(),
+                        Optional.ofNullable(entity.getMaterial())
+                                .map(s -> Arrays.asList(s.split(",")))
+                                .orElse(Collections.emptyList()));
+            }
+            return true;
+        }).filter(entity -> Objects.nonNull(entity.getHolder())).map(entity -> {
+            Item item = itemConverter.toItemFromEntity(entity);
+            UserProfileEntity profile = entity.getHolder().getUserProfile();
+            itemConverter.withAuthor(item, profile.getId(), profile.getUsername());
+
+            return item;
+        }).collect(Collectors.toList());
     }
 
     @Override
     public Item deleteItem(String id, String userId) {
-        Item itemById = getItemById(id, userId);
+        Item itemById = getItemById(userId, id);
         if (itemById == null) {
             throw new NotFoundSuchEntityException("Item not found");
         }
@@ -114,26 +149,38 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item getItemById(String id) {
         ItemEntity byId = itemRepository.findById(id).orElse(null);
-        if (byId == null) {
-            throw new NotFoundSuchEntityException("Item not found");
-        }
-        return itemConverter.toItemFromEntity(byId);
+        return getItemById(byId);
     }
 
     @Override
     public Item getItemById(String userId, String id) {
         ItemEntity byId = itemRepository.findById(userId, id);
-        if (byId == null) {
+        return getItemById(byId);
+    }
+
+    private Item getItemById(ItemEntity itemEntity) {
+        if (itemEntity == null) {
             throw new NotFoundSuchEntityException("Item not found");
         }
-        return itemConverter.toItemFromEntity(byId);
+        Item item = itemConverter.toItemFromEntity(itemEntity);
+        UserProfileEntity profile = itemEntity.getHolder().getUserProfile();
+        itemConverter.withAuthor(item, profile.getId(), profile.getUsername());
+
+        return item;
     }
 
     @Override
     public List<Item> getAllItems(int limit) {
         return itemRepository.findAllWithLimit(limit)
                 .stream()
-                .map(item -> itemConverter.toItemFromEntity(item))
+                 .filter(item -> Objects.nonNull(item.getHolder()))
+                .map(item -> {
+                    Item model = itemConverter.toItemFromEntity(item);
+                    UserProfileEntity profile = item.getHolder().getUserProfile();
+                    itemConverter.withAuthor(model, profile.getId(), profile.getUsername());
+
+                    return model;
+                })
                 .collect(Collectors.toList());
     }
 

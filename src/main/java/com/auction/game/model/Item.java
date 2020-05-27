@@ -15,4 +15,9 @@ public class Item {
     private List<ItemMedia> medias;
     private Timestamp published;
     private boolean hidden;
+    private List<String> genre;
+    private List<String> material;
+    private List<String> category;
+    private String authorId;
+    private String author;
 }

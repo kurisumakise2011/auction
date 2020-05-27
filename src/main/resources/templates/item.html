@@ -32,14 +32,21 @@
                         url: "/items/" + itemId,
                         contentType: 'application/json',
                         async: true,
-                        success: function (data) {
+                        success: function (data, status, xhr) {
+                            if (xhr.status >= 400) {
+                                return;
+                            }
+
                             let item = JSON.parse(JSON.stringify(data));
                             $("#media").attr("src", item.medias[0].imageUrl);
                             $("#title").html('<b>Title:</b> ' + item.title);
                             $("#description").html('<b>Description:</b> ' + item.description);
+                            $("#category").html('<b>Category:</b> ' + item.category);
+                            $("#genre").html('<b>Genre:</b> ' + item.genre);
+                            $("#material").html('<b>Material:</b> ' + item.material);
                             $("#price").html('<b>Price: </b>' + item.price + "$");
-                            $("#hidden").html('<b>Hidden: </b>' + item.hidden);
-                            $("#published").html('<b>Published time: </b>' + item.published);
+                            // $("#hidden").html('<b>Hidden: </b>' + item.hidden);
+                            $("#published").html('<b>Published time: </b>' + item.published.replace("T", " ").replace(".000+0000", ""));
                         },
                         error: function (err) {
                             console.log(err);
@@ -54,7 +61,10 @@
                         <h5 class="card-title" id="title"></h5>
                         <p class="card-text" id="description"></p>
                         <p class="card-text" id="price"></p>
-                        <p class="card-text" id="hidden"></p>
+                        <p class="card-text" id="category"></p>
+                        <p class="card-text" id="genre"></p>
+                        <p class="card-text" id="material"></p>
+<!--                        <p class="card-text" id="hidden"></p>-->
                         <p class="card-text"><small id="published" class="text-muted"></small></p>
                         <script>
                             $(document).ready(function () {
@@ -63,13 +73,16 @@
                                     type: 'GET',
                                     url: "/items/" + itemId + "/owner",
                                     async: true,
-                                    success: function (bool) {
+                                    success: function (bool, status, xhr) {
+                                        if (xhr.status !== 200) {
+                                            return;
+                                        }
+
                                         if (bool) {
                                             $("#removeItem").css('display', 'block');
                                         }
                                     },
                                     error: function (err) {
-                                        alert(err.responseText);
                                         console.log(err);
                                     }
                                 });
@@ -90,7 +103,11 @@
                                             type: 'DELETE',
                                             url: "/items/" + itemId,
                                             async: true,
-                                            success: function () {
+                                            success: function (data, status, xhr) {
+                                                if (xhr.status !== 200) {
+                                                    alert(data.responseText);
+                                                    return;
+                                                }
                                                 alert('Removed');
                                                 window.location.href = '/profile';
                                             },

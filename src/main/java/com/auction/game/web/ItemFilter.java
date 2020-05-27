@@ -4,6 +4,7 @@ import lombok.Data;
 
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 public class ItemFilter {
@@ -13,4 +14,7 @@ public class ItemFilter {
     private Timestamp to;
     private boolean hidden;
     private boolean onlyMy;
+    private List<String> categories;
+    private List<String> genres;
+    private List<String> materials;
 }

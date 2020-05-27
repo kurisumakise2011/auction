@@ -22,17 +22,18 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
             crossorigin="anonymous"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 </head>
 <body>
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         $.ajax({
             type: "GET",
             url: "/resources/sliders",
-            contentType: 'application/json',
+            contentType: if (xhr.statusapplication/json',
             async: true,
-            success: function (data) {
+            success: function (data, status, xhr) {
                 let images = JSON.parse(JSON.stringify(data));
                 let sliders = $("#sliders");
                 for (let i = 0; i < images.length; i++) {
@@ -44,7 +45,7 @@
                     }
                     sliders.append("<div class='" + itemClass + "'>" +
                         "<img height='500px' width='100%' src='" + images[i].imageUrl + "' alt='Slider'>" +
-                    "</div>");
+                        "</div>");
                 }
             },
             error: function (err) {
@@ -73,23 +74,108 @@
         <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="sr-only">Previous</span>
-        </a><div class="col-sm-4">
-        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
         </a>
+        <div class="col-sm-4">
+            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
     </div>
-    <div class="album py-5 bg-light">
-        <div class="container" style="padding: 10px;">
-            <script>
-                $(document).ready(function () {
+    <div class="container">
+        <script>
+            $(document).ready(function () {
+                $.ajax({
+                    type: 'GET',
+                    url: "/items/limit/9",
+                    async: true,
+                    success: function (data, status, xhr) {
+                        let items = JSON.parse(JSON.stringify(data));
+                        let itemsEl = $("#items");
+                        let block = '';
+                        for (let i = 0; i < items.length; i++) {
+                            let item = items[i];
+                            block += genItemBlock(item);
+                        }
+                        itemsEl.append(block);
+
+                        function genItemBlock(item) {
+                            return '<div class="col-sm-4" style="margin: 5% 0"><div class="card">'
+                                + '<img class="card-img-top" src="' + (item.medias.length === 0 ? "" : item.medias[0].imageUrl) + '" alt="Generic placeholder image"/>'
+                                + '<div class="card-body">'
+                                + '<h5 class="card-title"><b>Title:</b> ' + item.title + '</h5>'
+                                + '<p class="card-text"><b>Description:</b> ' + item.description + '</p>'
+                                + '</div>'
+                                + '<ul class="list-group list-group-flush">'
+                                + '<li class="list-group-item"><b>Price:</b> ' + item.price + ' $</li>'
+                                + '<li class="list-group-item"><b>Author: </b><a class="card-link" href="/profile/' + item.authorId + '">' + item.author + '</a></li>'
+                                + '</ul>'
+                                + '<div class="card-body">'
+                                + '<a id="viewItem" class="card-link" href="/items/view/' + item.id + '" role="button">View details</a>'
+                                + '</div></div></div>';
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                })
+            });
+        </script>
+        <script th:replace="fragments/dictionaries.html :: dictionaries"></script>
+        <script>
+            $(document).ready(function () {
+                let fun = function (e, id, valueName) {
+                    return '<li><label class="form-check-label"><input class="form-check-input" type="checkbox" value="' + e[valueName] + '" name="' + id + '" id="' + e.id + '"/>' + e[valueName] + '</label></li>';
+                };
+
+                getDictionaries('/dictionary/category', 'categories', 'category', fun);
+                getDictionaries('/dictionary/genre', 'genres', 'genre', fun);
+                getDictionaries('/dictionary/material', 'materials', 'material', fun);
+            });
+        </script>
+        <script>
+            $(document).ready(function () {
+                $("#searchItems").click(function () {
+                    let filterTitle = $("#filter-title").val();
+                    let filterPrice = $("#filter-price").val();
+                    let categories = [];
+                    let materials = [];
+                    let genres = [];
+
+                    $("input[name=categories]").each(function () {
+                        if ($(this).is(":checked")) {
+                            categories.push($(this).val())
+                        }
+                    });
+
+                    $("input[name=materials]").each(function () {
+                        if ($(this).is(":checked")) {
+                            materials.push($(this).val())
+                        }
+                    });
+
+                    $("input[name=genres]").each(function () {
+                        if ($(this).is(":checked")) {
+                            genres.push($(this).val())
+                        }
+                    });
+
                     $.ajax({
-                        type: 'GET',
-                        url: "/items/limit/9",
+                        type: "POST",
+                        url: "/filter/items",
+                        contentType: 'application/json',
                         async: true,
-                        success: function (data) {
+                        data: JSON.stringify({
+                            "title": filterTitle,
+                            "price": filterPrice,
+                            "categories": categories,
+                            "materials": materials,
+                            "genres": genres,
+                        }),
+                        success: function (data, status, xhr) {
                             let items = JSON.parse(JSON.stringify(data));
                             let itemsEl = $("#items");
+                            itemsEl.empty();
                             let block = '';
                             for (let i = 0; i < items.length; i++) {
                                 let item = items[i];
@@ -98,7 +184,7 @@
                             itemsEl.append(block);
 
                             function genItemBlock(item) {
-                                return '<div class="col-sm-4"><div class="card">'
+                                return '<div class="col-sm-4" style="margin: 5% 0"><div class="card">'
                                     + '<img class="card-img-top" src="' + (item.medias.length === 0 ? "" : item.medias[0].imageUrl) + '" alt="Generic placeholder image"/>'
                                     + '<div class="card-body">'
                                     + '<h5 class="card-title"><b>Title:</b> ' + item.title + '</h5>'
@@ -106,6 +192,7 @@
                                     + '</div>'
                                     + '<ul class="list-group list-group-flush">'
                                     + '<li class="list-group-item"><b>Price:</b> ' + item.price + ' $</li>'
+                                    + '<li class="list-group-item"><b>Author: </b><a class="card-link" href="/profile/' + item.authorId + '">' + item.author + '</a></li>'
                                     + '</ul>'
                                     + '<div class="card-body">'
                                     + '<a id="viewItem" class="card-link" href="/items/view/' + item.id + '" role="button">View details</a>'
@@ -115,11 +202,51 @@
                         error: function (err) {
                             console.log(err);
                         }
-                    })
+                    });
                 });
-            </script>
-            <div class="row" id="items">
-            </div>
+            });
+        </script>
+        <div class="row" style="margin: 50px 0;">
+            <form id="filter" class="form-inline">
+                <div class="form-group">
+                    <input id="filter-title" class="form-control"
+                           name="title"
+                           type="text" placeholder="Title of item">
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-light" data-toggle="collapse"
+                            data-target="#categoriesSpoiler" role="button"
+                            aria-expanded="false" aria-controls="categoriesSpoiler">Categories
+                    </button>
+                    <div class="collapse" id="categoriesSpoiler">
+                        <ul id="categories">
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-light" data-toggle="collapse"
+                            data-target="#genresSpoiler" role="button"
+                            aria-expanded="false" aria-controls="genresSpoiler">Genres
+                    </button>
+                    <div class="collapse" id="genresSpoiler">
+                        <ul id="genres">
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-light" data-toggle="collapse"
+                            data-target="#materialsSpoiler" role="button"
+                            aria-expanded="false" aria-controls="materialsSpoiler">Materials
+                    </button>
+                    <div class="collapse" id="materialsSpoiler">
+                        <ul id="materials">
+                        </ul>
+                    </div>
+                </div>
+                <button id="searchItems" class="btn btn-primary" type="button">Search</button>
+            </form>
+        </div>
+        <div class="row" id="items">
         </div>
     </div>
 </main>

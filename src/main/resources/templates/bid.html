@@ -29,14 +29,23 @@
                             type: 'GET',
                             url: "/auctions/" + auctionId +"/owner",
                             async: true,
-                            success: function (data) {
+                            success: function (data, status, xhr) {
+                                if (xhr.status >= 400) {
+                                    alert(data.responseText);
+                                    return;
+                                }
                                 let bool = JSON.parse(JSON.stringify(data));
                                 if (bool) {
                                     $.ajax({
                                         type: 'GET',
                                         url: "/bids/auctions/" + auctionId,
                                         async: true,
-                                        success: function (data) {
+                                        success: function (data, status, xhr) {
+                                            if (xhr.status >= 400) {
+                                                alert(data.responseText);
+                                                return;
+                                            }
+
                                             let bids = JSON.parse(JSON.stringify(data));
                                             for (let i = 0; i < bids.length; i++) {
                                                 let bid = bids[i];
@@ -71,7 +80,11 @@
                             url: "/auctions/" + auctionId,
                             contentType: 'application/json',
                             async: true,
-                            success: function (data) {
+                            success: function (data, httpStatus, xhr) {
+                                if (httpStatus >= 400) {
+                                    alert(data.responseText);
+                                    return;
+                                }
                                 let auction = JSON.parse(JSON.stringify(data));
                                 let status = auction.status;
 
@@ -95,9 +108,9 @@
                                 $("#title").text(auction.item.title);
                                 $("#description").text(auction.item.description);
                                 $("#price").text(auction.currentPrice + "$");
-                                $("#started").text(auction.started);
-                                $("#end").text(auction.end);
-                                $("#updated").text(auction.updated);
+                                $("#started").text(auction.started.replace("T", " ").replace(".000+0000", ""));
+                                $("#end").text(auction.end.replace("T", " ").replace(".000+0000", ""));
+                                $("#updated").text(auction.updated.replace("T", " ").replace(".000+0000", ""));
                             },
                             error: function (err) {
                                 alert(err.responseText);
@@ -135,7 +148,11 @@
                                             data: JSON.stringify({
                                                 price: price,
                                             }),
-                                            success: function (data) {
+                                            success: function (data, status, xhr) {
+                                                if (xhr.status >= 400) {
+                                                    alert(data.responseText);
+                                                    return;
+                                                }
                                                 alert(data);
                                                 window.location.href = '/bid';
                                             },

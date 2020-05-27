@@ -6,7 +6,11 @@
                 url: "/users/who",
                 contentType: 'application/json',
                 async: true,
-                success: function (data) {
+                success: function (data, status, xhr) {
+                    if (xhr.status >= 400) {
+                        alert(data.responseText);
+                        return;
+                    }
                     let user = JSON.parse(JSON.stringify(data));
                     if (user.username !== "anon") {
                         $("#menu").css('display', 'block');
@@ -27,7 +31,7 @@
     <ul class="list-unstyled" id="menu" style="display: none;">
         <li><a href="/main" class="text-white">Main</a></li>
         <li><a href="/profile" class="text-white">Profile</a></li>
-        <li><a href="/auction" class="text-white">My auctions</a></li>
+        <li><a href="/auction" class="text-white">Auctions</a></li>
         <li><a href="/signout" class="text-white">Logout</a></li>
     </ul>
     <h4 class="text-white">Contact</h4>

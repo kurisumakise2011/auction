@@ -2,7 +2,6 @@ package com.auction.game.web;
 
 import lombok.Data;
 
-
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 

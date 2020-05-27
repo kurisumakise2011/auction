@@ -20,4 +20,10 @@ public interface UserService {
     String findIdByUsername(String username);
 
     void banUser(boolean banned, String settingsId);
+
+    void updateDescription(String description, String id);
+
+    void updateImage(String id, byte[] image);
+
+    byte[] getImage(String userId);
 }

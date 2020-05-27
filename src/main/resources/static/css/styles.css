@@ -22,3 +22,16 @@ a:active {
 #main {
     height: 100vh;
 }
+
+.form-inline .form-group {
+    margin-right: 10px;
+}
+
+li {
+    list-style-type: none;
+}
+ul {
+    text-align: left;
+    margin-left: 0;
+    padding-left: 0;
+}

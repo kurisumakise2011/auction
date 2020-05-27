@@ -53,7 +53,16 @@ public class ItemEntity {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "auctionItemEntity")
     private List<AuctionEntity> auctionItemEntity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "auctioneer_id")
     private AuctioneerEntity holder;
+
+    @Column
+    private String genre;
+
+    @Column
+    private String material;
+
+    @Column
+    private String category;
 }

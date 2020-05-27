@@ -35,7 +35,11 @@
                         url: "/admin/users/" + id + "/ban",
                         contentType: 'application/json',
                         async: true,
-                        success: function () {
+                        success: function (data, status, xhr) {
+                            if (xhr.status >= 400) {
+                                alert(data.responseText);
+                                return;
+                            }
                             alert('Banned');
                             window.location.href = '/admin';
                         },
@@ -58,7 +62,11 @@
                         url: "/admin/users/" + id + "/unban",
                         contentType: 'application/json',
                         async: true,
-                        success: function () {
+                        success: function (data, status, xhr) {
+                            if (xhr.status >= 400) {
+                                alert(data.responseText);
+                                return;
+                            }
                             alert('Unbanned');
                             window.location.href = '/admin';
                         },
@@ -80,7 +88,11 @@
                         url: "/admin/auctions/" + id + "/abandon",
                         contentType: 'application/json',
                         async: true,
-                        success: function () {
+                        success: function (data, status, xhr) {
+                            if (xhr.status >= 400) {
+                                alert(data.responseText);
+                                return;
+                            }
                             alert('Abandoned');
                             window.location.href = '/admin';
                         },
@@ -96,7 +108,11 @@
                     url: "/admin/auctions",
                     contentType: 'application/json',
                     async: true,
-                    success: function (data) {
+                    success: function (data, status, xhr) {
+                        if (xhr.status >= 400) {
+                            alert(data.responseText);
+                            return;
+                        }
                         let auctions = JSON.parse(JSON.stringify(data));
                         let auctionsTable = $("#auctionsTable");
 
@@ -124,7 +140,11 @@
                     url: "/admin/users",
                     contentType: 'application/json',
                     async: true,
-                    success: function (data) {
+                    success: function (data, status, xhr) {
+                        if (xhr.status >= 400) {
+                            alert(data.responseText);
+                            return;
+                        }
                         let users = JSON.parse(JSON.stringify(data));
                         let usersTable = $("#usersTable");
 
@@ -147,6 +167,91 @@
                 });
             });
         </script>
+        <script th:replace="fragments/dictionaries.html :: dictionaries"></script>
+        <script>
+            $(document).ready(function () {
+                let fun = function (e, id, valueName) {
+                    return '<li id="li_' + e.id  + '"><label class="form-check-label">' +
+                        '<input class="class-form" type="text" value="' + e[valueName] + '" name="' + id + '" id="' + e.id + '"/>'
+                        + '</label>'
+                        + '<input type="hidden" value="' + e.id + '" name="id_' + valueName +  '"/>'; //+
+                        // '<button class="btn btn-danger" type="button">Remove</button></li>';
+                };
+
+                getDictionaries('/dictionary/category', 'categories', 'category', fun);
+                getDictionaries('/dictionary/genre', 'genres', 'genre', fun);
+                getDictionaries('/dictionary/material', 'materials', 'material', fun);
+
+                $("#updateDictionaries").click(function () {
+                    updateDictionaries('/dictionary/category', 'categories', 'category');
+                    updateDictionaries('/dictionary/genre', 'genres', 'genre');
+                    updateDictionaries('/dictionary/material', 'materials', 'material');
+                });
+
+                function uuidv4() {
+                    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                        let r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                        return v.toString(16);
+                    });
+                }
+
+                $("#addCategory").click(function () {
+                    let id = uuidv4();
+                    $("#categories").append('<li id="li_' + id + '"><label class="form-check-label"><input class="class-form" type="text" value="" name="categories" id="' + id + '"/></label><button class="btn btn-danger" onclick="removeLi(' + e.id + ')" type="button">Remove</button></li>');
+                });
+                $("#addGenres").click(function () {
+                    let id = uuidv4();
+                    $("#genres").append('<li id="li_' + id + '"><label class="form-check-label"><input class="class-form" type="text" value="" name="genres" id="' + id + '"/></label><button class="btn btn-danger" onclick="removeLi(' + e.id + ')" type="button">Remove</button></li>');
+                });
+                $("#addMaterials").click(function () {
+                    let id = uuidv4();
+                    $("#materials").append('<li id="li_' + id + '"><label class="form-check-label"><input class="class-form" type="text" value="" name="materials" id="' + id + '"/></label><button class="btn btn-danger" onclick="removeLi(' + e.id + ')" type="button">Remove</button></li>');
+                });
+            });
+        </script>
+        <div class="form-group">
+            <button type="button" class="btn btn-light" data-toggle="collapse"
+                    data-target="#categoriesSpoiler" role="button"
+                    aria-expanded="false" aria-controls="categoriesSpoiler">Categories
+            </button>
+            <div class="collapse" id="categoriesSpoiler">
+                <ul id="categories">
+                </ul>
+            </div>
+        </div>
+        <div class="form-group">
+            <button type="button" class="btn btn-success" id="addCategory">Add</button>
+        </div>
+        <div class="form-group">
+            <button type="button" class="btn btn-light" data-toggle="collapse"
+                    data-target="#genresSpoiler" role="button"
+                    aria-expanded="false" aria-controls="genresSpoiler">Genres
+            </button>
+            <div class="collapse" id="genresSpoiler">
+                <ul id="genres">
+                </ul>
+            </div>
+        </div>
+        <div class="form-group">
+            <utton type="button" class="btn btn-success" id="addGenres">Add</utton>
+        </div>
+        <div class="form-group">
+            <button type="button" class="btn btn-light" data-toggle="collapse"
+                    data-target="#materialsSpoiler" role="button"
+                    aria-expanded="false" aria-controls="materialsSpoiler">Materials
+            </button>
+            <div class="collapse" id="materialsSpoiler">
+                <ul id="materials">
+                </ul>
+            </div>
+        </div>
+        <div class="form-group">
+            <button type="button" class="btn btn-success" id="addMaterials">Add</button>
+        </div>
+        <div class="form-group" style="margin-top: 50px;">
+            <button type="button" class="btn btn-primary" id="updateDictionaries">Update</button>
+        </div>
+        <hr>
         <h3>Users</h3>
         <table class="table table-dark" style="margin: 100px 0;">
             <thead>
