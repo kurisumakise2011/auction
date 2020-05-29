@@ -39,5 +39,5 @@ public class UserProfile {
 
     private boolean hasAvatar;
 
-    private String image;
+    private byte[] image;
 }
