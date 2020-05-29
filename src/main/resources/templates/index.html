@@ -31,7 +31,7 @@
         $.ajax({
             type: "GET",
             url: "/resources/sliders",
-            contentType: if (xhr.statusapplication/json',
+            contentType: "application/json",
             async: true,
             success: function (data, status, xhr) {
                 let images = JSON.parse(JSON.stringify(data));
